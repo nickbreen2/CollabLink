@@ -1,38 +1,85 @@
-export default function CollabsPage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Collabs</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage your collaboration opportunities
-        </p>
-      </div>
+'use client'
 
-      <div className="bg-white dark:bg-gray-950 rounded-xl border p-12 text-center">
-        <div className="max-w-md mx-auto space-y-4">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <svg
-              className="w-8 h-8 text-primary"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-              />
-            </svg>
+import { useEffect, useState } from 'react'
+import DashboardHeader from '@/components/dashboard/DashboardHeader'
+import { Users } from 'lucide-react'
+
+export default function CollabsPage() {
+  const [handle, setHandle] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchStore = async () => {
+      try {
+        const response = await fetch('/api/store')
+        if (response.ok) {
+          const data = await response.json()
+          setHandle(data.handle)
+        }
+      } catch (error) {
+        console.error('Failed to fetch store:', error)
+      }
+    }
+    fetchStore()
+  }, [])
+
+  return (
+    <div className="flex h-full flex-col">
+      {/* FIXED HEADER */}
+      <DashboardHeader
+        title="Collabs"
+        subtitle="Manage your collaboration opportunities"
+        handle={handle}
+      />
+
+      {/* SCROLLABLE CONTENT */}
+      <div className="flex-1 overflow-y-auto max-h-[calc(100vh-120px)]">
+        <div className="mx-auto w-full max-w-[1180px] px-4 py-8 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white dark:bg-gray-950 rounded-xl border p-6">
+              <div className="text-sm font-medium text-muted-foreground">
+                Pending Requests
+              </div>
+              <div className="mt-2 text-3xl font-bold">0</div>
+              <div className="mt-2 text-xs text-muted-foreground">
+                Coming soon
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-950 rounded-xl border p-6">
+              <div className="text-sm font-medium text-muted-foreground">
+                Active Collabs
+              </div>
+              <div className="mt-2 text-3xl font-bold">0</div>
+              <div className="mt-2 text-xs text-muted-foreground">
+                Coming soon
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-950 rounded-xl border p-6">
+              <div className="text-sm font-medium text-muted-foreground">
+                Completed Collabs
+              </div>
+              <div className="mt-2 text-3xl font-bold">0</div>
+              <div className="mt-2 text-xs text-muted-foreground">
+                Coming soon
+              </div>
+            </div>
           </div>
-          <h2 className="text-xl font-semibold">Collaboration Coming Soon</h2>
-          <p className="text-muted-foreground">
-            This feature will allow brands to discover and collaborate with you. 
-            Stay tuned!
-          </p>
+
+          <div className="bg-white dark:bg-gray-950 rounded-xl border p-12 text-center">
+            <div className="max-w-md mx-auto space-y-4">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                <Users className="w-8 h-8 text-primary" />
+              </div>
+              <h2 className="text-xl font-semibold">Collaboration Coming Soon</h2>
+              <p className="text-muted-foreground">
+                This feature will allow brands to discover and collaborate with you. 
+                Stay tuned!
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-

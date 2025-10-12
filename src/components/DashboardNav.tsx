@@ -48,12 +48,12 @@ export default function DashboardNav() {
   }
 
   return (
-    <aside className="w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 flex flex-col">
-      <div className="p-6">
+    <aside className="w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 flex flex-col h-screen sticky top-0">
+      <div className="p-6 flex-shrink-0">
         <h1 className="text-xl font-bold">CollabVerse</h1>
       </div>
 
-      <nav className="flex-1 px-4 space-y-1">
+      <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = pathname === item.href
@@ -76,7 +76,7 @@ export default function DashboardNav() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-200 dark:border-gray-800">
+      <div className="p-4 border-t border-gray-200 dark:border-gray-800 flex-shrink-0 mt-auto">
         <Button
           variant="ghost"
           className="w-full justify-start gap-3"
