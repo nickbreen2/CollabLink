@@ -10,8 +10,9 @@ import Banner from '@/components/Banner'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from '@/components/ui/use-toast'
 import { CreatorStore } from '@prisma/client'
-import { Instagram, Youtube, Music, Eye, Pencil } from 'lucide-react'
-import { TikTokIcon } from '@/components/icons/TikTokIcon'
+import { Eye, Pencil, Plus } from 'lucide-react'
+import { getPlatformIcon } from '@/components/icons/PlatformIcons'
+import { getPlatformById } from '@/lib/platformCategories'
 
 export default function MyStorePage() {
   const [store, setStore] = useState<CreatorStore | null>(null)
@@ -91,12 +92,6 @@ export default function MyStorePage() {
   const handleToggle = () => setMode(mode === 'preview' ? 'edit' : 'preview')
   
   const social = (store.social as any[]) || []
-  const socialIcons: Record<string, any> = {
-    instagram: Instagram,
-    youtube: Youtube,
-    tiktok: TikTokIcon,
-    snapchat: Music,
-  }
   
   const initials = store.displayName
     ?.split(' ')
@@ -110,6 +105,13 @@ export default function MyStorePage() {
       title: 'Coming soon!',
       description: 'Email connection will be available soon.',
     })
+  }
+
+  const handleOpenLinkManager = () => {
+    // Trigger the link manager to open
+    if (typeof window !== 'undefined' && (window as any).__openLinkManager) {
+      (window as any).__openLinkManager()
+    }
   }
 
   return (
@@ -228,32 +230,53 @@ export default function MyStorePage() {
                 )}
 
                 {/* Social Links */}
-                {social.length > 0 && (
-                  <div className="flex justify-center gap-3 mb-6">
+                {(social.length > 0 || isEditing) && (
+                  <div className="flex justify-center items-center gap-3 mb-6 flex-wrap">
                     {social.map((link: any, index: number) => {
-                      const Icon = socialIcons[link.network.toLowerCase()] || Instagram
+                      const platform = getPlatformById(link.network)
+                      const Icon = platform ? getPlatformIcon(platform.icon) : null
+                      
+                      if (!Icon) return null
+                      
                       return (
                         <a
                           key={index}
-                          href={link.url}
+                          href={link.url.startsWith('http') ? link.url : `https://${link.url}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`p-3 rounded-full transition-colors ${
-                            store.theme === 'LIGHT'
-                              ? 'bg-gray-100 hover:bg-gray-200'
-                              : 'bg-gray-800 hover:bg-gray-700'
-                          }`}
+                          className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-lg"
                         >
-                          <Icon className="h-5 w-5" />
+                          <Icon className="h-10 w-10 object-contain" />
                         </a>
                       )
                     })}
+                    
+                    {/* ADD LINK BUTTON - Edit mode only */}
+                    {isEditing && (
+                      <button
+                        onClick={handleOpenLinkManager}
+                        aria-label="Add a new link"
+                        title="Add a new link"
+                        className="
+                          w-11 h-11 rounded-full 
+                          flex items-center justify-center
+                          transition-all duration-200
+                          hover:bg-gray-100 dark:hover:bg-gray-800
+                          hover:ring-2 hover:ring-purple-500/40
+                          focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
+                          text-gray-600 dark:text-gray-400
+                          hover:text-purple-600 dark:hover:text-purple-400
+                        "
+                      >
+                        <Plus className="w-5 h-5" />
+                      </button>
+                    )}
                   </div>
                 )}
 
                 {/* EMAIL CONNECT PILL */}
                 <EmailConnectPill
-                  avatarUrl={store.avatarUrl}
+                  avatarUrl={store.avatarUrl || undefined}
                   onSubmit={handleEmailConnect}
                 />
               </div>
@@ -275,7 +298,7 @@ export default function MyStorePage() {
               
               {/* SCROLLABLE CONTENT */}
               <div className="h-full overflow-y-auto">
-                <EditPanel store={store} onUpdate={handleUpdate} />
+                <EditPanel store={store} onUpdate={handleUpdate} onOpenLinkManager={handleOpenLinkManager} />
               </div>
             </div>
           </aside>
