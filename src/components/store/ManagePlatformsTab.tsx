@@ -8,7 +8,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { toast } from '@/components/ui/use-toast'
 import LinkManager from './LinkManager'
 import AddLinkModal from './AddLinkModal'
-import AddedLinksList from './AddedLinksList'
+import DraggableAddedLinksList from './DraggableAddedLinksList'
 import { Platform } from '@/lib/platformCategories'
 
 interface ManagePlatformsTabProps {
@@ -65,6 +65,26 @@ export default function ManagePlatformsTab({ store, onUpdate, onBack }: ManagePl
     })
   }
 
+  const handleReorderLinks = async (newLinks: any[]) => {
+    const previousLinks = socialLinks
+
+    // Optimistically update the UI
+    setSocialLinks(newLinks)
+
+    try {
+      // Save immediately (no debounce for reordering)
+      await onUpdate({ social: newLinks })
+    } catch (error) {
+      // Revert on error
+      setSocialLinks(previousLinks)
+      toast({
+        variant: 'destructive',
+        title: 'Failed to reorder',
+        description: 'Could not save the new order. Please try again.',
+      })
+    }
+  }
+
 
   // If showing link manager, render that instead
   if (showLinkManager) {
@@ -109,10 +129,21 @@ export default function ManagePlatformsTab({ store, onUpdate, onBack }: ManagePl
           <div>
             <h4 className="text-sm font-medium text-muted-foreground mb-3">Social Media Links</h4>
             
-            {/* Added Links List */}
-            <AddedLinksList 
+            {/* Add New Link Button */}
+            <Button
+              type="button"
+              className="w-full mb-4 bg-[#0F172A] text-white hover:bg-[#1E293B] border-[#0F172A] hover:border-[#1E293B] transition-colors"
+              onClick={() => setShowLinkManager(true)}
+            >
+              <Plus className="w-4 h-4 mr-2 text-white" />
+              Add a New Link
+            </Button>
+
+            {/* Draggable Links List with 6-dot handles */}
+            <DraggableAddedLinksList 
               links={socialLinks} 
               onDelete={handleDeleteLink}
+              onReorder={handleReorderLinks}
             />
 
             {socialLinks.length === 0 && (
@@ -122,17 +153,6 @@ export default function ManagePlatformsTab({ store, onUpdate, onBack }: ManagePl
               </div>
             )}
           </div>
-
-          {/* Add New Link Button */}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={() => setShowLinkManager(true)}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add a New Link
-          </Button>
         </div>
       </div>
     </div>

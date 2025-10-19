@@ -10,6 +10,7 @@ import DisplayNameEditModal from '@/components/store/DisplayNameEditModal'
 import LocationEditModal from '@/components/store/LocationEditModal'
 import BioEditModal from '@/components/store/BioEditModal'
 import CategoriesEditModal from '@/components/store/CategoriesEditModal'
+import SocialIconsDisplay from '@/components/store/SocialIconsDisplay'
 import { toast } from '@/components/ui/use-toast'
 import { CreatorStore } from '@prisma/client'
 import { Eye, Pencil, Plus } from 'lucide-react'
@@ -77,6 +78,7 @@ export default function MyStorePage() {
       })
     }
   }
+
 
   if (loading) {
     return (
@@ -358,24 +360,7 @@ export default function MyStorePage() {
                 {/* Social Links */}
                 {(social.length > 0 || isEditing) && (
                   <div className="flex justify-center items-center gap-3 mb-6 flex-wrap">
-                    {social.map((link: any, index: number) => {
-                      const platform = getPlatformById(link.network)
-                      const Icon = platform ? getPlatformIcon(platform.icon) : null
-                      
-                      if (!Icon) return null
-                      
-                      return (
-                        <a
-                          key={index}
-                          href={link.url.startsWith('http') ? link.url : `https://${link.url}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-lg"
-                        >
-                          <Icon className="h-10 w-10 object-contain" />
-                        </a>
-                      )
-                    })}
+                    <SocialIconsDisplay links={social} />
                     
                     {/* QUICK ADD LINK BUTTON - Edit mode only */}
                     {isEditing && (

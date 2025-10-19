@@ -5,6 +5,7 @@ import Banner from './Banner'
 import { CreatorStore } from '@prisma/client'
 import { getPlatformIcon } from '@/components/icons/PlatformIcons'
 import { getPlatformById } from '@/lib/platformCategories'
+import SocialIconsDisplay from '@/components/store/SocialIconsDisplay'
 
 interface StorePreviewCardProps {
   store: CreatorStore
@@ -77,24 +78,7 @@ export default function StorePreviewCard({ store }: StorePreviewCardProps) {
           {/* Social Links */}
           {social.length > 0 && (
             <div className="flex gap-3 pt-2">
-              {social.map((link: any, index: number) => {
-                const platform = getPlatformById(link.network)
-                const Icon = platform ? getPlatformIcon(platform.icon) : null
-                
-                if (!Icon) return null
-                
-                return (
-                  <a
-                    key={index}
-                    href={link.url.startsWith('http') ? link.url : `https://${link.url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-lg"
-                  >
-                    <Icon className="h-10 w-10 object-contain" />
-                  </a>
-                )
-              })}
+              <SocialIconsDisplay links={social} />
             </div>
           )}
         </div>
