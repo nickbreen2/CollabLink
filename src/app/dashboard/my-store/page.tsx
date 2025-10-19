@@ -5,7 +5,11 @@ import EditSidebar from '@/components/store/EditSidebar'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import EmailConnectPill from '@/components/store/EmailConnectPill'
 import Banner from '@/components/Banner'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import ProfileImageUpload from '@/components/store/ProfileImageUpload'
+import DisplayNameEditModal from '@/components/store/DisplayNameEditModal'
+import LocationEditModal from '@/components/store/LocationEditModal'
+import BioEditModal from '@/components/store/BioEditModal'
+import CategoriesEditModal from '@/components/store/CategoriesEditModal'
 import { toast } from '@/components/ui/use-toast'
 import { CreatorStore } from '@prisma/client'
 import { Eye, Pencil, Plus } from 'lucide-react'
@@ -21,6 +25,10 @@ export default function MyStorePage() {
   const [showLinkManagerModal, setShowLinkManagerModal] = useState(false)
   const [selectedPlatform, setSelectedPlatform] = useState<Platform | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showDisplayNameModal, setShowDisplayNameModal] = useState(false)
+  const [showLocationModal, setShowLocationModal] = useState(false)
+  const [showBioModal, setShowBioModal] = useState(false)
+  const [showCategoriesModal, setShowCategoriesModal] = useState(false)
 
   useEffect(() => {
     fetchStore()
@@ -145,6 +153,38 @@ export default function MyStorePage() {
     setSelectedPlatform(null)
   }
 
+  const handleSaveDisplayName = async (newName: string) => {
+    await handleUpdate({ displayName: newName })
+    toast({
+      title: 'Success',
+      description: 'Display name updated',
+    })
+  }
+
+  const handleSaveLocation = async (newLocation: string) => {
+    await handleUpdate({ location: newLocation })
+    toast({
+      title: 'Success',
+      description: 'Location updated',
+    })
+  }
+
+  const handleSaveBio = async (newBio: string) => {
+    await handleUpdate({ bio: newBio })
+    toast({
+      title: 'Success',
+      description: 'Bio updated',
+    })
+  }
+
+  const handleSaveCategories = async (newCategories: string[]) => {
+    await handleUpdate({ categories: newCategories })
+    toast({
+      title: 'Success',
+      description: 'Categories updated',
+    })
+  }
+
   return (
     <div className="flex h-full flex-col">
       {/* FIXED HEADER - DOESN'T SCROLL */}
@@ -217,46 +257,101 @@ export default function MyStorePage() {
               >
                 {/* Avatar */}
                 <div className="mb-5">
-                  <Avatar className="h-32 w-32 border-4 border-white dark:border-black shadow-xl">
-                    <AvatarImage src={store.avatarUrl || undefined} />
-                    <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-purple-500 to-pink-500 text-white">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
+                  <ProfileImageUpload
+                    avatarUrl={store.avatarUrl}
+                    initials={initials}
+                    onUpdate={(url) => handleUpdate({ avatarUrl: url })}
+                    showHoverOverlay={isEditing}
+                    className="h-32 w-32"
+                  />
                 </div>
 
                 {/* Name and Location */}
                 <div className="mb-4">
-                  <h2 className="text-3xl font-bold">
-                    {store.displayName || 'Your Name'}
-                  </h2>
+                  <div className="relative inline-block group/name">
+                    <h2 
+                      className={`text-3xl font-bold ${
+                        isEditing 
+                          ? 'cursor-pointer hover:underline decoration-2 underline-offset-4 decoration-[#D4D7DC] transition-all' 
+                          : ''
+                      }`}
+                      onClick={() => isEditing && setShowDisplayNameModal(true)}
+                    >
+                      {store.displayName || 'Your Name'}
+                    </h2>
+                    {isEditing && (
+                      <Pencil className="absolute -top-1 -left-6 h-4 w-4 text-gray-500 opacity-0 group-hover/name:opacity-80 transition-opacity duration-200 pointer-events-none" />
+                    )}
+                  </div>
                   {store.location && (
-                    <p className={`text-sm mt-2 ${store.theme === 'LIGHT' ? 'text-gray-600' : 'text-gray-400'}`}>
-                      📍 {store.location}
-                    </p>
+                    <div className="relative mt-2">
+                      <div className="inline-block group/location">
+                        <p 
+                          className={`text-sm ${store.theme === 'LIGHT' ? 'text-gray-600' : 'text-gray-400'} ${
+                            isEditing 
+                              ? 'cursor-pointer hover:underline decoration-2 underline-offset-4 decoration-[#D4D7DC] transition-all' 
+                              : ''
+                          }`}
+                          onClick={() => isEditing && setShowLocationModal(true)}
+                        >
+                          📍 {store.location}
+                        </p>
+                        {isEditing && (
+                          <Pencil className="absolute top-0 -left-5 h-3.5 w-3.5 text-gray-500 opacity-0 group-hover/location:opacity-80 transition-opacity duration-200 pointer-events-none" />
+                        )}
+                      </div>
+                    </div>
                   )}
                 </div>
 
                 {/* Bio */}
                 {store.bio && (
-                  <p className="text-sm leading-relaxed max-w-prose mb-5">{store.bio}</p>
+                  <div className="relative inline-block group/bio mb-5">
+                    <p 
+                      className={`text-sm leading-relaxed max-w-prose ${
+                        isEditing 
+                          ? 'cursor-pointer hover:underline decoration-2 underline-offset-4 decoration-[#D4D7DC] transition-all' 
+                          : ''
+                      }`}
+                      onClick={() => isEditing && setShowBioModal(true)}
+                    >
+                      {store.bio}
+                    </p>
+                    {isEditing && (
+                      <Pencil className="absolute top-0 -left-6 h-3.5 w-3.5 text-gray-500 opacity-0 group-hover/bio:opacity-80 transition-opacity duration-200 pointer-events-none" />
+                    )}
+                  </div>
                 )}
 
                 {/* Categories */}
                 {store.categories && store.categories.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-2 mb-6">
-                    {store.categories.map((category, index) => (
-                      <span
-                        key={index}
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          store.theme === 'LIGHT'
-                            ? 'bg-gray-100 text-gray-800'
-                            : 'bg-gray-800 text-gray-200'
-                        }`}
-                      >
-                        {category}
-                      </span>
-                    ))}
+                  <div className="relative inline-block mb-6 group/categories">
+                    <div 
+                      className={`flex flex-wrap justify-center gap-2 ${
+                        isEditing ? 'cursor-pointer' : ''
+                      }`}
+                      onClick={() => isEditing && setShowCategoriesModal(true)}
+                    >
+                      {store.categories.map((category, index) => (
+                        <span
+                          key={index}
+                          className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                            store.theme === 'LIGHT'
+                              ? 'bg-gray-100 text-gray-800'
+                              : 'bg-gray-800 text-gray-200'
+                          } ${
+                            isEditing 
+                              ? 'group-hover/categories:ring-2 group-hover/categories:ring-[#D4D7DC] group-hover/categories:ring-offset-2' 
+                              : ''
+                          }`}
+                        >
+                          {category}
+                        </span>
+                      ))}
+                    </div>
+                    {isEditing && (
+                      <Pencil className="absolute top-0 -left-5 h-3.5 w-3.5 text-gray-500 opacity-0 group-hover/categories:opacity-80 transition-opacity duration-200 pointer-events-none" />
+                    )}
                   </div>
                 )}
 
@@ -292,13 +387,12 @@ export default function MyStorePage() {
                           w-11 h-11 rounded-full 
                           flex items-center justify-center
                           transition-all duration-200
-                          bg-gray-100 dark:bg-gray-800
-                          hover:bg-gray-200 dark:hover:bg-gray-700
-                          hover:ring-2 hover:ring-purple-500/40
+                          bg-gradient-to-br from-[#FF72D2] to-[#A16BFE]
+                          hover:scale-105
+                          hover:shadow-lg hover:shadow-purple-500/50
                           focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
-                          text-gray-600 dark:text-gray-400
-                          hover:text-purple-600 dark:hover:text-purple-400
-                          shadow-sm hover:shadow-md
+                          text-white
+                          shadow-md
                         "
                       >
                         <Plus className="w-5 h-5" />
@@ -355,6 +449,38 @@ export default function MyStorePage() {
           setSelectedPlatform(null)
         }}
         onAdd={handleAddLink}
+      />
+
+      {/* DISPLAY NAME EDIT MODAL */}
+      <DisplayNameEditModal
+        open={showDisplayNameModal}
+        currentName={store.displayName || ''}
+        onClose={() => setShowDisplayNameModal(false)}
+        onSave={handleSaveDisplayName}
+      />
+
+      {/* LOCATION EDIT MODAL */}
+      <LocationEditModal
+        open={showLocationModal}
+        currentLocation={store.location || ''}
+        onClose={() => setShowLocationModal(false)}
+        onSave={handleSaveLocation}
+      />
+
+      {/* BIO EDIT MODAL */}
+      <BioEditModal
+        open={showBioModal}
+        currentBio={store.bio || ''}
+        onClose={() => setShowBioModal(false)}
+        onSave={handleSaveBio}
+      />
+
+      {/* CATEGORIES EDIT MODAL */}
+      <CategoriesEditModal
+        open={showCategoriesModal}
+        currentCategories={store.categories || []}
+        onClose={() => setShowCategoriesModal(false)}
+        onSave={handleSaveCategories}
       />
     </div>
   )
