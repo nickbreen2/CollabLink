@@ -7,6 +7,13 @@ export interface SocialLink {
   url: string
 }
 
+export interface CustomLink {
+  id: string
+  title: string
+  url: string
+  visible: boolean
+}
+
 export interface StoreUpdatePayload {
   displayName?: string
   location?: string
@@ -16,6 +23,7 @@ export interface StoreUpdatePayload {
   theme?: Theme
   social?: SocialLink[]
   categories?: string[]
+  customLinks?: CustomLink[]
 }
 
 export interface User {

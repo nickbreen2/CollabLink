@@ -1,10 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Trash2, ExternalLink, GripVertical } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { getPlatformById } from '@/lib/platformCategories'
-import { getPlatformIcon } from '@/components/icons/PlatformIcons'
+import { ExternalLink, GripVertical, Pencil } from 'lucide-react'
+import { CustomLink } from '@/types'
 import {
   DndContext,
   closestCenter,
@@ -26,23 +24,18 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-interface SocialLink {
-  network: string
-  url: string
-}
-
-interface DraggableAddedLinksListProps {
-  links: SocialLink[]
-  onDelete: (network: string) => void
-  onReorder: (newLinks: SocialLink[]) => void
+interface DraggableCustomLinksListProps {
+  links: CustomLink[]
+  onEdit: (link: CustomLink) => void
+  onReorder: (newLinks: CustomLink[]) => void
 }
 
 interface SortableLinkItemProps {
-  link: SocialLink
-  onDelete: (network: string) => void
+  link: CustomLink
+  onEdit: (link: CustomLink) => void
 }
 
-function SortableLinkItem({ link, onDelete }: SortableLinkItemProps) {
+function SortableLinkItem({ link, onEdit }: SortableLinkItemProps) {
   const {
     attributes,
     listeners,
@@ -50,14 +43,11 @@ function SortableLinkItem({ link, onDelete }: SortableLinkItemProps) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: link.network })
-
-  const platform = getPlatformById(link.network)
-  const Icon = platform ? getPlatformIcon(platform.icon) : null
+  } = useSortable({ id: link.id })
 
   const formatUrl = (url: string): string => {
     try {
-      const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`)
+      const urlObj = new URL(url)
       return urlObj.hostname.replace('www.', '') + urlObj.pathname.slice(0, 20) + 
              (urlObj.pathname.length > 20 ? '...' : '')
     } catch {
@@ -92,22 +82,16 @@ function SortableLinkItem({ link, onDelete }: SortableLinkItemProps) {
         <GripVertical className="w-5 h-5" />
       </button>
 
-      {/* Platform Icon */}
-      {Icon && (
-        <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-          <Icon className="w-8 h-8 object-contain" />
-        </div>
-      )}
-
       {/* Link Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium capitalize">
-          {platform?.name || link.network}
+        <p className="text-sm font-medium truncate">
+          {link.title}
         </p>
         <a
-          href={link.url.startsWith('http') ? link.url : `https://${link.url}`}
+          href={link.url}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
           className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 truncate"
         >
           <span className="truncate">{formatUrl(link.url)}</span>
@@ -115,29 +99,24 @@ function SortableLinkItem({ link, onDelete }: SortableLinkItemProps) {
         </a>
       </div>
 
-      {/* Delete Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onDelete(link.network)}
-        className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+      {/* Edit Button */}
+      <button
+        onClick={() => onEdit(link)}
+        className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+        aria-label="Edit link"
       >
-        <Trash2 className="w-4 h-4 text-red-500" />
-        <span className="sr-only">Delete {link.network} link</span>
-      </Button>
+        <Pencil className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+      </button>
     </div>
   )
 }
 
-function DragOverlayItem({ link }: { link: SocialLink | null }) {
+function DragOverlayItem({ link }: { link: CustomLink | null }) {
   if (!link) return null
-
-  const platform = getPlatformById(link.network)
-  const Icon = platform ? getPlatformIcon(platform.icon) : null
 
   const formatUrl = (url: string): string => {
     try {
-      const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`)
+      const urlObj = new URL(url)
       return urlObj.hostname.replace('www.', '') + urlObj.pathname.slice(0, 20) + 
              (urlObj.pathname.length > 20 ? '...' : '')
     } catch {
@@ -148,14 +127,9 @@ function DragOverlayItem({ link }: { link: SocialLink | null }) {
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 shadow-2xl opacity-90 min-w-[300px]">
       <GripVertical className="w-5 h-5 text-gray-400 flex-shrink-0" />
-      {Icon && (
-        <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-          <Icon className="w-8 h-8 object-contain" />
-        </div>
-      )}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium capitalize">
-          {platform?.name || link.network}
+        <p className="text-sm font-medium truncate">
+          {link.title}
         </p>
         <p className="text-xs text-muted-foreground truncate">
           {formatUrl(link.url)}
@@ -165,11 +139,11 @@ function DragOverlayItem({ link }: { link: SocialLink | null }) {
   )
 }
 
-export default function DraggableAddedLinksList({
+export default function DraggableCustomLinksList({
   links,
-  onDelete,
+  onEdit,
   onReorder,
-}: DraggableAddedLinksListProps) {
+}: DraggableCustomLinksListProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [items, setItems] = useState(links)
 
@@ -193,8 +167,8 @@ export default function DraggableAddedLinksList({
 
     if (over && active.id !== over.id) {
       setItems((items) => {
-        const oldIndex = items.findIndex((item) => item.network === active.id)
-        const newIndex = items.findIndex((item) => item.network === over.id)
+        const oldIndex = items.findIndex((item) => item.id === active.id)
+        const newIndex = items.findIndex((item) => item.id === over.id)
 
         return arrayMove(items, oldIndex, newIndex)
       })
@@ -235,18 +209,18 @@ export default function DraggableAddedLinksList({
       onDragCancel={handleDragCancel}
     >
       <SortableContext
-        items={items.map((link) => link.network)}
+        items={items.map((link) => link.id)}
         strategy={verticalListSortingStrategy}
       >
         <div className="space-y-2">
           {items.map((link) => (
-            <SortableLinkItem key={link.network} link={link} onDelete={onDelete} />
+            <SortableLinkItem key={link.id} link={link} onEdit={onEdit} />
           ))}
         </div>
       </SortableContext>
       <DragOverlay>
         {activeId ? (
-          <DragOverlayItem link={items.find((l) => l.network === activeId) || null} />
+          <DragOverlayItem link={items.find((l) => l.id === activeId) || null} />
         ) : null}
       </DragOverlay>
     </DndContext>

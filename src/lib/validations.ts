@@ -1,5 +1,29 @@
 import { z } from 'zod'
 
+// URL normalization helper
+function normalizeUrl(value: string): string {
+  // Step 1: Trim whitespace
+  value = value.trim()
+  
+  // Step 2: Check if it already has a valid scheme
+  if (/^https?:\/\//i.test(value)) {
+    return value
+  }
+  
+  // Step 3: Check for other known schemes (leave as is)
+  if (/^(mailto|tel|ftp|ftps|chrome-extension|file):/i.test(value)) {
+    return value
+  }
+  
+  // Step 4: Protocol-relative URL (starts with //)
+  if (value.startsWith('//')) {
+    return 'https:' + value
+  }
+  
+  // Step 5: No scheme detected, prefix with https://
+  return 'https://' + value
+}
+
 export const HandleSchema = z
   .string()
   .min(3, 'Handle must be at least 3 characters')
@@ -46,6 +70,16 @@ export const StoreUpdateSchema = z.object({
     )
     .optional(),
   categories: z.array(z.string()).max(5, 'Maximum 5 categories allowed').optional(),
+  customLinks: z
+    .array(
+      z.object({
+        id: z.string(),
+        title: z.string().max(100),
+        url: z.string().transform(normalizeUrl).pipe(z.string().url()),
+        visible: z.boolean(),
+      })
+    )
+    .optional(),
 })
 
 export type SignUpInput = z.infer<typeof SignUpSchema>

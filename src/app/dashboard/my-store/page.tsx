@@ -18,6 +18,7 @@ import { getPlatformIcon } from '@/components/icons/PlatformIcons'
 import { getPlatformById, Platform } from '@/lib/platformCategories'
 import LinkManagerModal from '@/components/store/LinkManagerModal'
 import AddLinkModal from '@/components/store/AddLinkModal'
+import { CustomLink } from '@/types'
 
 export default function MyStorePage() {
   const [store, setStore] = useState<CreatorStore | null>(null)
@@ -105,6 +106,8 @@ export default function MyStorePage() {
   const handleToggle = () => setMode(mode === 'preview' ? 'edit' : 'preview')
   
   const social = (store.social as any[]) || []
+  const customLinks = (store.customLinks as CustomLink[]) || []
+  const visibleCustomLinks = customLinks.filter(link => link.visible)
   
   const initials = store.displayName
     ?.split(' ')
@@ -243,33 +246,34 @@ export default function MyStorePage() {
                 </button>
               </div>
 
-              {/* PROFILE BODY - Perfectly Centered Content */}
+              {/* PROFILE BODY - Fixed Header Position */}
               <div
                 className={`
                   relative
                   w-full
-                  flex flex-col items-center justify-center text-center
-                  min-h-[800px]
-                  px-6 py-10
-                  sm:px-10
+                  flex flex-col items-center text-center
+                  px-6 pt-24 pb-10
+                  sm:px-10 md:pt-32
                   -translate-y-64
                   transition-transform duration-300
                   ${store.theme === 'LIGHT' ? 'bg-white' : 'bg-gradient-to-b from-black via-black/95 to-black'}
                 `}
               >
-                {/* Avatar */}
-                <div className="mb-5">
-                  <ProfileImageUpload
-                    avatarUrl={store.avatarUrl}
-                    initials={initials}
-                    onUpdate={(url) => handleUpdate({ avatarUrl: url })}
-                    showHoverOverlay={isEditing}
-                    className="h-32 w-32"
-                  />
-                </div>
+                {/* HEADER SECTION - Fixed position from top */}
+                <div className="w-full flex flex-col items-center">
+                  {/* Avatar */}
+                  <div className="mb-4">
+                    <ProfileImageUpload
+                      avatarUrl={store.avatarUrl}
+                      initials={initials}
+                      onUpdate={(url) => handleUpdate({ avatarUrl: url })}
+                      showHoverOverlay={isEditing}
+                      className="h-32 w-32"
+                    />
+                  </div>
 
                 {/* Name and Location */}
-                <div className="mb-4">
+                <div className="mb-2">
                   <div className="relative inline-block group/name">
                     <h2 
                       className={`text-3xl font-bold ${
@@ -308,7 +312,7 @@ export default function MyStorePage() {
 
                 {/* Bio */}
                 {store.bio && (
-                  <div className="relative inline-block group/bio mb-5">
+                  <div className="relative inline-block group/bio mb-4">
                     <p 
                       className={`text-sm leading-relaxed max-w-prose ${
                         isEditing 
@@ -327,7 +331,7 @@ export default function MyStorePage() {
 
                 {/* Categories */}
                 {store.categories && store.categories.length > 0 && (
-                  <div className="relative inline-block mb-6 group/categories">
+                  <div className="relative inline-block group/categories">
                     <div 
                       className={`flex flex-wrap justify-center gap-2 ${
                         isEditing ? 'cursor-pointer' : ''
@@ -356,41 +360,72 @@ export default function MyStorePage() {
                     )}
                   </div>
                 )}
+                </div>
 
-                {/* Social Links */}
-                {(social.length > 0 || isEditing) && (
-                  <div className="flex justify-center items-center gap-3 mb-6 flex-wrap">
-                    <SocialIconsDisplay links={social} />
-                    
-                    {/* QUICK ADD LINK BUTTON - Edit mode only */}
-                    {isEditing && (
-                      <button
-                        onClick={handleQuickAddLink}
-                        aria-label="Add a new link"
-                        title="Add a new link"
-                        className="
-                          w-11 h-11 rounded-full 
-                          flex items-center justify-center
-                          transition-all duration-200
-                          bg-gradient-to-br from-[#FF72D2] to-[#A16BFE]
-                          hover:scale-105
-                          hover:shadow-lg hover:shadow-purple-500/50
-                          focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
-                          text-white
-                          shadow-md
-                        "
-                      >
-                        <Plus className="w-5 h-5" />
-                      </button>
-                    )}
+                {/* BODY SECTION - Scrollable content area */}
+                <div className="w-full flex flex-col items-center mt-6 pb-20">
+                  {/* Social Links */}
+                  {(social.length > 0 || isEditing) && (
+                    <div className="flex justify-center items-center gap-3 mb-4 flex-wrap">
+                      <SocialIconsDisplay links={social} />
+                      
+                      {/* QUICK ADD LINK BUTTON - Edit mode only */}
+                      {isEditing && (
+                        <button
+                          onClick={handleQuickAddLink}
+                          aria-label="Add a new link"
+                          title="Add a new link"
+                          className="
+                            w-11 h-11 rounded-full 
+                            flex items-center justify-center
+                            transition-all duration-200
+                            bg-gradient-to-br from-[#FF72D2] to-[#A16BFE]
+                            hover:scale-105
+                            hover:shadow-lg hover:shadow-purple-500/50
+                            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
+                            text-white
+                            shadow-md
+                          "
+                        >
+                          <Plus className="w-5 h-5" />
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* EMAIL CONNECT FORM */}
+                  <div className="w-full max-w-md mt-4">
+                    <EmailConnectPill
+                      avatarUrl={store.avatarUrl || undefined}
+                      onSubmit={handleEmailConnect}
+                    />
                   </div>
-                )}
 
-                {/* EMAIL CONNECT PILL */}
-                <EmailConnectPill
-                  avatarUrl={store.avatarUrl || undefined}
-                  onSubmit={handleEmailConnect}
-                />
+                  {/* Custom Links */}
+                  {visibleCustomLinks.length > 0 && (
+                    <div className="w-full max-w-md space-y-3 mt-4">
+                      {visibleCustomLinks.map((link) => (
+                        <a
+                          key={link.id}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`
+                            block w-full px-6 py-4 rounded-xl font-medium text-center
+                            transition-all duration-200
+                            ${store.theme === 'LIGHT'
+                              ? 'bg-gray-100 hover:bg-gray-200 text-gray-900'
+                              : 'bg-gray-800 hover:bg-gray-700 text-white'
+                            }
+                            hover:scale-[1.02] hover:shadow-lg
+                          `}
+                        >
+                          {link.title}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

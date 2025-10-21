@@ -37,6 +37,7 @@ model CreatorStore {
   categories            String[]
   social                Json?
   showSocialLinks       Boolean  @default(true)
+  customLinks           Json?
   isPublished           Boolean  @default(false)
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt

@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CreatorStore } from '@prisma/client'
-import { ChevronRight, ArrowLeft, User, Heart } from 'lucide-react'
+import { ChevronRight, ArrowLeft, User, Heart, Link } from 'lucide-react'
 import HeaderTab from './HeaderTab'
 import ManagePlatformsTab from './ManagePlatformsTab'
+import CustomLinkManagerTab from './CustomLinkManagerTab'
 import DesignForm from '../DesignForm'
 
 interface EditSidebarProps {
@@ -13,7 +14,7 @@ interface EditSidebarProps {
   onUpdate: (data: Partial<CreatorStore>) => void
 }
 
-type SidebarView = 'overview' | 'header' | 'platforms'
+type SidebarView = 'overview' | 'header' | 'platforms' | 'customLinks'
 
 export default function EditSidebar({ store, onUpdate }: EditSidebarProps) {
   const [currentView, setCurrentView] = useState<SidebarView>('overview')
@@ -29,11 +30,13 @@ export default function EditSidebar({ store, onUpdate }: EditSidebarProps) {
         return <HeaderTab store={store} onUpdate={onUpdate} onBack={handleBack} />
       case 'platforms':
         return <ManagePlatformsTab store={store} onUpdate={onUpdate} onBack={handleBack} />
+      case 'customLinks':
+        return <CustomLinkManagerTab store={store} onUpdate={onUpdate} onBack={handleBack} />
       case 'overview':
       default:
         return (
           <div className="space-y-4 px-6 py-6">
-            {/* Section Title */}
+            {/* Header Section Title */}
             <div className="px-2">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Header</h3>
             </div>
@@ -62,6 +65,25 @@ export default function EditSidebar({ store, onUpdate }: EditSidebarProps) {
                   <Heart className="h-4 w-4 text-gray-600 dark:text-gray-400" />
                 </div>
                 <span className="font-medium text-sm">Manage Platforms</span>
+              </div>
+              <ChevronRight className="h-4 w-4 text-gray-400" />
+            </button>
+
+            {/* Body Section Title */}
+            <div className="px-2 pt-2">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Body</h3>
+            </div>
+
+            {/* Custom Link Section */}
+            <button
+              onClick={() => setCurrentView('customLinks')}
+              className="w-full flex items-center justify-between p-2.5 rounded-lg border bg-white dark:bg-gray-950 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <Link className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                </div>
+                <span className="font-medium text-sm">Custom Link</span>
               </div>
               <ChevronRight className="h-4 w-4 text-gray-400" />
             </button>
