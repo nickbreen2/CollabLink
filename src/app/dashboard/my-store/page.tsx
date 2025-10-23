@@ -18,7 +18,7 @@ import { getPlatformIcon } from '@/components/icons/PlatformIcons'
 import { getPlatformById, Platform } from '@/lib/platformCategories'
 import LinkManagerModal from '@/components/store/LinkManagerModal'
 import AddLinkModal from '@/components/store/AddLinkModal'
-import CollabRequestModal from '@/components/store/CollabRequestModal'
+import SelfCollabModal from '@/components/store/SelfCollabModal'
 import { CustomLink } from '@/types'
 
 export default function MyStorePage() {
@@ -32,7 +32,7 @@ export default function MyStorePage() {
   const [showLocationModal, setShowLocationModal] = useState(false)
   const [showBioModal, setShowBioModal] = useState(false)
   const [showCategoriesModal, setShowCategoriesModal] = useState(false)
-  const [showCollabModal, setShowCollabModal] = useState(false)
+  const [showSelfCollabModal, setShowSelfCollabModal] = useState(false)
 
   useEffect(() => {
     fetchStore()
@@ -118,7 +118,10 @@ export default function MyStorePage() {
     .toUpperCase() || '?'
 
   const handleConnect = () => {
-    setShowCollabModal(true)
+    // In preview mode, show self-collab modal instead of navigating
+    if (mode === 'preview') {
+      setShowSelfCollabModal(true)
+    }
   }
 
   const handleQuickAddLink = () => {
@@ -511,14 +514,10 @@ export default function MyStorePage() {
         onSave={handleSaveCategories}
       />
 
-      {/* COLLAB REQUEST MODAL */}
-      <CollabRequestModal
-        open={showCollabModal}
-        onClose={() => setShowCollabModal(false)}
-        creatorId={store.id}
-        creatorAvatar={store.avatarUrl || undefined}
-        creatorName={store.displayName || undefined}
-        isSelfView={mode === 'preview'}
+      {/* SELF COLLAB MODAL */}
+      <SelfCollabModal
+        open={showSelfCollabModal}
+        onClose={() => setShowSelfCollabModal(false)}
       />
     </div>
   )

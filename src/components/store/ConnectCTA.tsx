@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -9,6 +10,7 @@ type Props = {
   displayName?: string;
   isEditMode?: boolean;
   theme?: "LIGHT" | "DARK";
+  handle?: string;
   onConnect?: () => void;
   className?: string;
 };
@@ -18,6 +20,7 @@ export default function ConnectCTA({
   displayName, 
   isEditMode = false,
   theme = "DARK",
+  handle,
   onConnect, 
   className 
 }: Props) {
@@ -48,38 +51,74 @@ export default function ConnectCTA({
       {/* Button */}
       <div className="relative px-4 pb-4 pointer-events-auto">
         <div className="max-w-72 mx-auto">
-          <Button
-            onClick={onConnect}
-            variant={theme === "LIGHT" ? "default" : "secondary"}
-            className={cn(
-              "w-full h-14 rounded-full px-4",
-              "text-sm font-semibold",
-              "flex items-center justify-center gap-2",
-              "shadow-lg hover:shadow-xl",
-              "transition-all duration-200 hover:scale-[1.02]",
-              theme === "DARK" && "bg-white hover:bg-gray-100 text-gray-900 shadow-white/10"
-            )}
-            size="lg"
-          >
-            {/* Label */}
-            <span>Collab with</span>
-            
-            {/* Avatar */}
-            <span className={cn(
-              "relative inline-flex h-6 w-6 overflow-hidden rounded-full ring-2",
-              theme === "LIGHT" ? "ring-white/20" : "ring-gray-900/20"
-            )}>
-              <span className="absolute inset-0 bg-gradient-to-br from-fuchsia-500 to-indigo-500" aria-hidden />
-              {avatarUrl ? (
-                <Image 
-                  alt={displayName || "Profile"} 
-                  src={avatarUrl} 
-                  fill 
-                  className="object-cover" 
-                />
-              ) : null}
-            </span>
-          </Button>
+          {handle ? (
+            <Link href={`/${handle}/collab`}>
+              <Button
+                variant={theme === "LIGHT" ? "default" : "secondary"}
+                className={cn(
+                  "w-full h-14 rounded-full px-4",
+                  "text-sm font-semibold",
+                  "flex items-center justify-center gap-2",
+                  "shadow-lg hover:shadow-xl",
+                  "transition-all duration-200 hover:scale-[1.02]",
+                  theme === "DARK" && "bg-white hover:bg-gray-100 text-gray-900 shadow-white/10"
+                )}
+                size="lg"
+              >
+                {/* Label */}
+                <span>Collab with</span>
+                
+                {/* Avatar */}
+                <span className={cn(
+                  "relative inline-flex h-6 w-6 overflow-hidden rounded-full ring-2",
+                  theme === "LIGHT" ? "ring-white/20" : "ring-gray-900/20"
+                )}>
+                  <span className="absolute inset-0 bg-gradient-to-br from-fuchsia-500 to-indigo-500" aria-hidden />
+                  {avatarUrl ? (
+                    <Image 
+                      alt={displayName || "Profile"} 
+                      src={avatarUrl} 
+                      fill 
+                      className="object-cover" 
+                    />
+                  ) : null}
+                </span>
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              onClick={onConnect}
+              variant={theme === "LIGHT" ? "default" : "secondary"}
+              className={cn(
+                "w-full h-14 rounded-full px-4",
+                "text-sm font-semibold",
+                "flex items-center justify-center gap-2",
+                "shadow-lg hover:shadow-xl",
+                "transition-all duration-200 hover:scale-[1.02]",
+                theme === "DARK" && "bg-white hover:bg-gray-100 text-gray-900 shadow-white/10"
+              )}
+              size="lg"
+            >
+              {/* Label */}
+              <span>Collab with</span>
+              
+              {/* Avatar */}
+              <span className={cn(
+                "relative inline-flex h-6 w-6 overflow-hidden rounded-full ring-2",
+                theme === "LIGHT" ? "ring-white/20" : "ring-gray-900/20"
+              )}>
+                <span className="absolute inset-0 bg-gradient-to-br from-fuchsia-500 to-indigo-500" aria-hidden />
+                {avatarUrl ? (
+                  <Image 
+                    alt={displayName || "Profile"} 
+                    src={avatarUrl} 
+                    fill 
+                    className="object-cover" 
+                  />
+                ) : null}
+              </span>
+            </Button>
+          )}
         </div>
       </div>
     </div>

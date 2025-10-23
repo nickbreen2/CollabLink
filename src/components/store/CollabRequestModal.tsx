@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
-import { User, Building2, Mail, DollarSign } from 'lucide-react'
+import { User, Building2, Mail, DollarSign, X } from 'lucide-react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 

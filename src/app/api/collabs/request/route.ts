@@ -6,9 +6,11 @@ import { z } from 'zod'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    console.log('📥 Received collab request:', JSON.stringify(body, null, 2))
 
     // Validate the request body
     const validatedData = CollabRequestSchema.parse(body)
+    console.log('✅ Validated data:', JSON.stringify(validatedData, null, 2))
 
     // Check if creator exists
     const creator = await prisma.creatorStore.findUnique({
@@ -34,10 +36,10 @@ export async function POST(request: NextRequest) {
       data: {
         creatorId: validatedData.creatorId,
         senderName: validatedData.senderName,
-        brandName: validatedData.brandName,
+        brandName: validatedData.brandName || null,
         senderEmail: validatedData.senderEmail,
-        budget: validatedData.budget,
-        description: validatedData.description,
+        budget: validatedData.budget ? Number(validatedData.budget) : null,
+        description: validatedData.description || null,
         links: validatedData.links || [],
         status: 'PENDING',
       },
@@ -79,9 +81,10 @@ export async function POST(request: NextRequest) {
       request: collabRequest,
     })
   } catch (error) {
-    console.error('Collab request error:', error)
+    console.error('❌ Collab request error:', error)
 
     if (error instanceof z.ZodError) {
+      console.error('Validation errors:', error.errors)
       return NextResponse.json(
         {
           success: false,
@@ -92,10 +95,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Log the full error for debugging
+    if (error instanceof Error) {
+      console.error('Error name:', error.name)
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+    }
+
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to submit collaboration request',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     )
