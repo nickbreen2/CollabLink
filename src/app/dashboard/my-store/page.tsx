@@ -14,7 +14,7 @@ import CategoriesEditModal from '@/components/store/CategoriesEditModal'
 import SocialIconsDisplay from '@/components/store/SocialIconsDisplay'
 import { toast } from '@/components/ui/use-toast'
 import { CreatorStore } from '@prisma/client'
-import { Eye, Pencil, Plus, MoreVertical, MoveUp, MoveDown, Trash2 } from 'lucide-react'
+import { Eye, Pencil, Plus, MoreVertical, MoveUp, MoveDown, Trash2, ChevronRight } from 'lucide-react'
 import { getPlatformIcon } from '@/components/icons/PlatformIcons'
 import { getPlatformById, Platform } from '@/lib/platformCategories'
 import LinkManagerModal from '@/components/store/LinkManagerModal'
@@ -483,18 +483,48 @@ export default function MyStorePage() {
                   )}
 
                   {/* Bio */}
-                  {store.bio && (
-                    <p 
-                      className={`text-sm leading-relaxed max-w-prose mb-4 ${
-                        isEditing 
-                          ? 'cursor-pointer hover:underline decoration-2 underline-offset-4 decoration-[#D4D7DC] transition-all' 
-                          : ''
-                      }`}
-                      onClick={() => isEditing && setShowBioModal(true)}
-                    >
-                      {store.bio}
-                    </p>
+                  {isEditing ? (
+                    // Edit mode - Card-style block with header
+                    <div className="w-full max-w-md mb-6">
+                      <button
+                        onClick={() => setShowBioModal(true)}
+                        className={`
+                          w-full rounded-xl
+                          ${store.theme === 'LIGHT'
+                            ? 'bg-[#F8FAFB] border border-gray-200'
+                            : 'bg-gray-900 border border-gray-800'
+                          }
+                        `}
+                      >
+                        {/* Header Row */}
+                        <div className="flex items-center justify-between px-5 py-3.5">
+                          <span className="font-bold text-sm">Bio</span>
+                          <ChevronRight className={`h-5 w-5 ${store.theme === 'LIGHT' ? 'text-gray-400' : 'text-gray-500'}`} />
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="px-5 pb-4 pt-2">
+                          {store.bio ? (
+                            <p className="text-sm leading-relaxed text-center">
+                              {store.bio}
+                            </p>
+                          ) : (
+                            <p className={`text-sm ${store.theme === 'LIGHT' ? 'text-gray-500' : 'text-gray-400'} text-center`}>
+                              Add bio to your profile
+                            </p>
+                          )}
+                        </div>
+                      </button>
+                    </div>
+                  ) : (
+                    // Preview/Public mode - Simple text display
+                    store.bio && (
+                      <p className="text-sm leading-relaxed max-w-prose mb-4">
+                        {store.bio}
+                      </p>
+                    )
                   )}
+                </div>
 
                   {/* Categories - COMMENTED OUT TO HIDE FROM STORE DISPLAY */}
                   {/* {store.categories && store.categories.length > 0 && (
@@ -530,8 +560,26 @@ export default function MyStorePage() {
 
                   {/* Custom Links */}
                   {(customLinks.length > 0 || isEditing) && (
-                    <div className="w-full max-w-md space-y-3 mt-4">
-                      {/* Existing Links */}
+                    <div className="w-full max-w-md">
+                      {isEditing ? (
+                        // Edit mode - Wrap in card-style box like Bio
+                        <div
+                          className={`
+                            w-full rounded-xl
+                            ${store.theme === 'LIGHT'
+                              ? 'bg-[#F8FAFB] border border-gray-200'
+                              : 'bg-gray-900 border border-gray-800'
+                            }
+                          `}
+                        >
+                          {/* Header Row */}
+                          <div className="px-5 py-3.5 text-left">
+                            <span className="font-bold text-sm">Links</span>
+                          </div>
+                          
+                          {/* Links Content */}
+                          <div className="px-5 pb-5 pt-2 space-y-3">
+                      {/* Existing Links - Edit Mode */}
                       {customLinks.map((link, index) => {
                         const platformIcon = detectPlatformFromUrl(link.url)
                         const displayIcon = link.customIconUrl || platformIcon
@@ -539,10 +587,8 @@ export default function MyStorePage() {
                         const isLast = index === customLinks.length - 1
                         const isFeatured = link.thumbnailSize && link.thumbnailSize !== 'none' && link.thumbnailUrl
                         
-                        // In edit mode, render as button to open editor
-                        if (isEditing) {
-                          // Featured link in edit mode
-                          if (isFeatured) {
+                        // Featured link in edit mode
+                        if (isFeatured) {
                             const height = link.thumbnailSize === 'big' ? 'h-[262px] md:h-[262px]' : 'h-[161px] md:h-[161px]'
                             return (
                               <div
@@ -732,9 +778,38 @@ export default function MyStorePage() {
                               </DropdownMenu>
                             </div>
                           )
-                        }
+                      })}
+
+                      {/* Add Link Card - Edit mode only */}
+                        <button
+                          onClick={handleQuickAddCustomLink}
+                          className={`
+                            w-full px-6 py-8 rounded-xl border-2 border-dashed
+                            transition-all duration-200
+                            hover:scale-[1.02] hover:shadow-lg
+                            ${store.theme === 'LIGHT'
+                              ? 'border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-600'
+                              : 'border-gray-700 hover:border-gray-600 hover:bg-gray-900/50 text-gray-400'
+                            }
+                            flex flex-col items-center justify-center gap-2
+                          `}
+                        >
+                          <Plus className="h-6 w-6" />
+                          <p className="font-medium">Add Link</p>
+                          <p className={`text-xs ${store.theme === 'LIGHT' ? 'text-gray-500' : 'text-gray-500'}`}>
+                            Click here to add content
+                          </p>
+                        </button>
+                          </div>
+                        </div>
+                      ) : (
+                        // Preview/Public mode - Simple list without box
+                        <div className="space-y-3 mt-4">
+                      {customLinks.map((link) => {
+                        const platformIcon = detectPlatformFromUrl(link.url)
+                        const displayIcon = link.customIconUrl || platformIcon
+                        const isFeatured = link.thumbnailSize && link.thumbnailSize !== 'none' && link.thumbnailUrl
                         
-                        // Preview mode - render as clickable link
                         // Featured link in preview mode
                         if (isFeatured) {
                           const height = link.thumbnailSize === 'big' ? 'h-[262px] md:h-[262px]' : 'h-[161px] md:h-[161px]'
@@ -816,32 +891,10 @@ export default function MyStorePage() {
                           </a>
                         )
                       })}
-
-                      {/* Add Link Card - Always visible in Edit mode */}
-                      {isEditing && (
-                        <button
-                          onClick={handleQuickAddCustomLink}
-                          className={`
-                            w-full px-6 py-8 rounded-xl border-2 border-dashed
-                            transition-all duration-200
-                            hover:scale-[1.02] hover:shadow-lg
-                            ${store.theme === 'LIGHT'
-                              ? 'border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-600'
-                              : 'border-gray-700 hover:border-gray-600 hover:bg-gray-900/50 text-gray-400'
-                            }
-                            flex flex-col items-center justify-center gap-2
-                          `}
-                        >
-                          <Plus className="h-6 w-6" />
-                          <p className="font-medium">Add Link</p>
-                          <p className={`text-xs ${store.theme === 'LIGHT' ? 'text-gray-500' : 'text-gray-500'}`}>
-                            Click here to add content
-                          </p>
-                        </button>
+                        </div>
                       )}
                     </div>
                   )}
-                </div>
 
                 {/* Spacer for the sticky button in preview mode */}
                 {!isEditing && (

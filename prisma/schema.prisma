@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,58 +8,37 @@ datasource db {
 }
 
 model User {
-  id                  String         @id @default(cuid())
-  email               String         @unique
+  id                  String        @id @default(cuid())
+  email               String        @unique
   passwordHash        String
-  name                String?
+  role                Role          @default(CREATOR)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  accountStatus       AccountStatus @default(ACTIVE)
   birthDate           DateTime?
-  role                Role           @default(CREATOR)
-  accountStatus       AccountStatus  @default(ACTIVE)
+  name                String?
   scheduledDeletionAt DateTime?
   store               CreatorStore?
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
 }
 
 model CreatorStore {
-  id                    String          @id @default(cuid())
-  userId                String          @unique
-  handle                String          @unique
-  displayName           String?
-  location              String?
-  bio                   String?         @db.Text
-  avatarUrl             String?
-  bannerUrl             String?
-  theme                 Theme           @default(DARK)
-  categories            String[]
-  social                Json?
-  showSocialLinks       Boolean         @default(true)
-  customLinks           Json?
-  isPublished           Boolean         @default(false)
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
-
-  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  collabRequests  CollabRequest[]
-}
-
-model CollabRequest {
-  id          String              @id @default(cuid())
-  creatorId   String
-  senderName  String
-  brandName   String?
-  senderEmail String
-  budget      Decimal?            @db.Decimal(10, 2)
-  description String?             @db.Text
-  links       String[]
-  status      CollabRequestStatus @default(PENDING)
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-
-  creator CreatorStore @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-
-  @@index([creatorId])
-  @@index([status])
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  handle          String   @unique
+  displayName     String?
+  location        String?
+  bio             String?
+  avatarUrl       String?
+  bannerUrl       String?
+  theme           Theme    @default(DARK)
+  categories      String[]
+  social          Json?
+  isPublished     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  showSocialLinks Boolean  @default(true)
+  customLinks     Json?
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
@@ -81,11 +57,3 @@ enum AccountStatus {
   PENDING_DELETION
   DELETED
 }
-
-enum CollabRequestStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-  ARCHIVED
-}
-
