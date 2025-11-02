@@ -358,12 +358,16 @@ export default function MyStorePage() {
                 className={`
                   relative
                   w-full
-                  overflow-hidden rounded-3xl border shadow-xl
+                  overflow-hidden rounded-3xl border
                   ring-1 ring-black/10 dark:ring-white/10
                   h-fit
                   transition-all duration-300 ease-in-out
                   ${store.theme === 'LIGHT' ? 'bg-white text-black' : 'bg-black text-white border-gray-800'}
+                  ${isEditing ? 'shadow-xl' : ''}
                 `}
+                style={!isEditing ? {
+                  boxShadow: '0 25px 80px rgba(0, 0, 0, 0.18), 0 15px 40px rgba(0, 0, 0, 0.12)'
+                } : {}}
               >
               {/* Banner/header area with profile image as background */}
               <div className="relative w-full overflow-hidden group" style={{ height: '380px' }}>
@@ -379,8 +383,8 @@ export default function MyStorePage() {
                     bottom: '-1px',
                     height: '100%',
                     background: store.theme === 'LIGHT'
-                      ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 97%, rgba(255,255,255,0.7) 98%, rgba(255,255,255,1) 99%, #FFFFFF 99%)'
-                      : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 97%, rgba(0,0,0,0.7) 98%, rgba(0,0,0,1) 99%, #000000 99%)'
+                      ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 85%, rgba(255,255,255,0.3) 88%, rgba(255,255,255,0.6) 92%, rgba(255,255,255,0.85) 96%, rgba(255,255,255,1) 99%, #FFFFFF 100%)'
+                      : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 85%, rgba(0,0,0,0.3) 88%, rgba(0,0,0,0.6) 92%, rgba(0,0,0,0.85) 96%, rgba(0,0,0,1) 99%, #000000 100%)'
                   }}
                 />
                 
@@ -418,33 +422,33 @@ export default function MyStorePage() {
               {/* PROFILE BODY - Fixed Header Position */}
               <div
                 className={`
-                  relative z-20
+                  relative z-50
                   w-full
                   flex flex-col items-center text-center
                   px-6 pt-6 pb-10
                   sm:px-10 sm:pt-8
-                  -translate-y-16
+                  -translate-y-32
                   transition-transform duration-300
                 `}
               >
                 {/* Background that starts where text begins */}
-                <div className={`absolute inset-0 ${store.theme === 'LIGHT' ? 'bg-white' : 'bg-gradient-to-b from-black via-black/95 to-black'}`} style={{ top: '40px', zIndex: 1 }} />
+                <div className={`absolute inset-0 ${store.theme === 'LIGHT' ? 'bg-white' : 'bg-gradient-to-b from-black via-black/95 to-black'}`} style={{ top: '80px', zIndex: 1 }} />
                 
                 {/* Gradient overlay to cover the split between banner and background */}
                 <div 
                   className="absolute left-0 right-0 w-full pointer-events-none"
                   style={{
-                    top: '-20px',
-                    height: '70px',
+                    top: '-40px',
+                    height: '120px',
                     zIndex: 10,
                     background: store.theme === 'LIGHT'
-                      ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 15%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.88) 45%, rgba(255,255,255,0.96) 60%, rgba(255,255,255,1) 70%, #FFFFFF 100%)'
-                      : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 15%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.88) 45%, rgba(0,0,0,0.96) 60%, rgba(0,0,0,1) 70%, #000000 100%)'
+                      ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.85) 75%, rgba(255,255,255,1) 100%)'
+                      : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 25%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,1) 100%)'
                   }}
                 />
                 
                 {/* HEADER SECTION - Fixed position from top */}
-                <div className="w-full flex flex-col items-center relative" style={{ zIndex: 20 }}>
+                <div className="w-full flex flex-col items-center relative" style={{ zIndex: 50 }}>
                 {/* Name and Location */}
                 <div className="mb-2">
                   <h2 
@@ -940,7 +944,7 @@ export default function MyStorePage() {
               </div>
             </div>
 
-            {/* CONNECT CTA - Preview mode only, sticky to scroll container */}
+            {/* CONNECT CTA - Preview mode only, not sticky */}
             {!isEditing && (
               <ConnectCTA
                 avatarUrl={store.avatarUrl || undefined}
@@ -948,6 +952,7 @@ export default function MyStorePage() {
                 theme={store.theme}
                 isEditMode={false}
                 onConnect={handleConnect}
+                sticky={false}
               />
             )}
           </div>

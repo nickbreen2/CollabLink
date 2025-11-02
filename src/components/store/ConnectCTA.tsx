@@ -13,6 +13,7 @@ type Props = {
   handle?: string;
   onConnect?: () => void;
   className?: string;
+  sticky?: boolean;
 };
 
 export default function ConnectCTA({ 
@@ -22,7 +23,8 @@ export default function ConnectCTA({
   theme = "DARK",
   handle,
   onConnect, 
-  className 
+  className,
+  sticky = true,
 }: Props) {
   // In edit mode: don't render the button at all
   if (isEditMode) {
@@ -33,7 +35,8 @@ export default function ConnectCTA({
   return (
     <div 
       className={cn(
-        "sticky bottom-0 w-full pointer-events-none z-30 -mt-32",
+        "w-full pointer-events-none z-30 -mt-32",
+        sticky ? "sticky bottom-0" : "relative",
         className
       )}
     >
