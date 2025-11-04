@@ -18,9 +18,10 @@ import {
 interface AddCustomLinkPageProps {
   onBack: () => void
   onSave: (title: string, url: string, thumbnailUrl?: string, thumbnailSize?: 'big' | 'small' | 'none', customIconUrl?: string) => void
+  theme?: 'LIGHT' | 'DARK'
 }
 
-export default function AddCustomLinkPage({ onBack, onSave }: AddCustomLinkPageProps) {
+export default function AddCustomLinkPage({ onBack, onSave, theme }: AddCustomLinkPageProps) {
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>(undefined)
@@ -287,7 +288,7 @@ export default function AddCustomLinkPage({ onBack, onSave }: AddCustomLinkPageP
                       className="h-8 w-8 flex-shrink-0 rounded-lg object-cover"
                     />
                   ) : (
-                    <PlatformIcon iconName={displayIcon} className="h-8 w-8 flex-shrink-0" />
+                    <PlatformIcon iconName={displayIcon} className="h-8 w-8 flex-shrink-0" theme={theme} />
                   )}
                   
                   {/* Title (live preview) */}
@@ -310,7 +311,7 @@ export default function AddCustomLinkPage({ onBack, onSave }: AddCustomLinkPageP
                         className="h-8 w-8 rounded-lg object-cover shadow-lg"
                       />
                     ) : (
-                      <PlatformIcon iconName={displayIcon} className="h-8 w-8 drop-shadow-lg" />
+                      <PlatformIcon iconName={displayIcon} className="h-8 w-8 drop-shadow-lg" theme={theme} />
                     )}
                   </div>
 
@@ -460,7 +461,8 @@ export default function AddCustomLinkPage({ onBack, onSave }: AddCustomLinkPageP
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="w-full bg-[#0E172A] hover:bg-[#1a2942] text-white font-semibold py-6 text-lg transition-colors"
+            className="w-full font-semibold py-6 text-lg"
+            variant="gradient"
           >
             {isSaving ? 'Adding...' : 'Add'}
           </Button>

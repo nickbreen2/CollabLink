@@ -13,13 +13,15 @@ interface LinkManagerModalProps {
   onClose: () => void
   onSelectPlatform: (platform: Platform) => void
   addedPlatformIds?: string[]
+  theme?: 'LIGHT' | 'DARK'
 }
 
 export default function LinkManagerModal({ 
   open, 
   onClose, 
   onSelectPlatform,
-  addedPlatformIds = []
+  addedPlatformIds = [],
+  theme
 }: LinkManagerModalProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedCategories, setExpandedCategories] = useState<string[]>([])
@@ -122,7 +124,7 @@ export default function LinkManagerModal({
                       {!isExpanded && (
                         <div className="flex items-center gap-1 pointer-events-none mr-1.5">
                           {previewPlatforms.map((platform) => {
-                            const Icon = getPlatformIcon(platform.icon)
+                            const Icon = getPlatformIcon(platform.icon, theme)
                             const isAdded = addedPlatformIds.includes(platform.id)
 
                             return (
@@ -145,7 +147,7 @@ export default function LinkManagerModal({
                       <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3 mx-2 mb-2">
                         <div className="grid grid-cols-3 gap-3">
                           {filteredPlatforms.map((platform) => {
-                            const Icon = getPlatformIcon(platform.icon)
+                            const Icon = getPlatformIcon(platform.icon, theme)
                             const isAdded = addedPlatformIds.includes(platform.id)
 
                             return (

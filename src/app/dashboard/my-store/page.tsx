@@ -7,7 +7,6 @@ import ConnectCTA from '@/components/store/ConnectCTA'
 import Banner from '@/components/Banner'
 import ProfileImageUpload from '@/components/store/ProfileImageUpload'
 import DisplayNameEditModal from '@/components/store/DisplayNameEditModal'
-import LocationEditModal from '@/components/store/LocationEditModal'
 import BioEditModal from '@/components/store/BioEditModal'
 import HandleEditModal from '@/components/store/HandleEditModal'
 import CategoriesEditModal from '@/components/store/CategoriesEditModal'
@@ -39,7 +38,6 @@ export default function MyStorePage() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [showDisplayNameModal, setShowDisplayNameModal] = useState(false)
   const [showHandleModal, setShowHandleModal] = useState(false)
-  const [showLocationModal, setShowLocationModal] = useState(false)
   const [showBioModal, setShowBioModal] = useState(false)
   const [showCategoriesModal, setShowCategoriesModal] = useState(false)
   const [showSelfCollabModal, setShowSelfCollabModal] = useState(false)
@@ -307,14 +305,6 @@ export default function MyStorePage() {
     })
   }
 
-  const handleSaveLocation = async (newLocation: string) => {
-    await handleUpdate({ location: newLocation })
-    toast({
-      title: 'Success',
-      description: 'Location updated',
-    })
-  }
-
   const handleSaveBio = async (newBio: string) => {
     await handleUpdate({ bio: newBio })
     toast({
@@ -342,17 +332,34 @@ export default function MyStorePage() {
 
       {/* SCROLLABLE CONTENT AREA */}
       <div className="flex-1 overflow-hidden relative">
-        <div className="h-full">
+        <div className="h-full relative">
           {/* PREVIEW COLUMN - SCROLLABLE - Centered with sidebar offset in Edit */}
           <div 
             className={`
-              flex justify-center items-start overflow-y-auto scrollbar-hide h-full pt-8 pb-6 px-4
-              transition-all duration-300 ease-in-out
+              relative flex justify-center items-start overflow-y-auto overflow-x-hidden scrollbar-hide h-full pt-8 pb-6 px-4
+              transition-[margin-right] duration-300 ease-in-out
               ${isEditing ? 'mr-[420px]' : ''}
             `}
+            style={{ overscrollBehaviorX: 'none' }}
           >
+            {/* Blurred background image - Preview mode only */}
+            {!isEditing && store?.avatarUrl && (
+              <div 
+                className="absolute inset-0 overflow-hidden pointer-events-none"
+                style={{
+                  backgroundImage: `url(${store.avatarUrl})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  filter: 'blur(40px)',
+                  transform: 'scale(1.1)',
+                  opacity: 0.25,
+                  zIndex: 0,
+                }}
+              />
+            )}
             {/* Container for card + sticky button */}
-            <div className="relative w-full max-w-[540px] mx-auto">
+            <div className="relative w-full max-w-[540px] mx-auto" style={{ zIndex: 10 }}>
               {/* PREVIEW CARD — CENTERED */}
               <div
                 className={`
@@ -361,7 +368,7 @@ export default function MyStorePage() {
                   overflow-hidden rounded-3xl border
                   ring-1 ring-black/10 dark:ring-white/10
                   h-fit
-                  transition-all duration-300 ease-in-out
+                  transition-[box-shadow] duration-300 ease-in-out
                   ${store.theme === 'LIGHT' ? 'bg-white text-black' : 'bg-black text-white border-gray-800'}
                   ${isEditing ? 'shadow-xl' : ''}
                 `}
@@ -383,8 +390,8 @@ export default function MyStorePage() {
                     bottom: '-1px',
                     height: '100%',
                     background: store.theme === 'LIGHT'
-                      ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 85%, rgba(255,255,255,0.3) 88%, rgba(255,255,255,0.6) 92%, rgba(255,255,255,0.85) 96%, rgba(255,255,255,1) 99%, #FFFFFF 100%)'
-                      : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 85%, rgba(0,0,0,0.3) 88%, rgba(0,0,0,0.6) 92%, rgba(0,0,0,0.85) 96%, rgba(0,0,0,1) 99%, #000000 100%)'
+                      ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 85%, rgba(255,255,255,0.2) 88%, rgba(255,255,255,0.5) 91%, rgba(255,255,255,0.75) 94%, rgba(255,255,255,0.9) 97%, rgba(255,255,255,1) 100%, #FFFFFF 100%)'
+                      : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 85%, rgba(0,0,0,0.2) 88%, rgba(0,0,0,0.5) 91%, rgba(0,0,0,0.75) 94%, rgba(0,0,0,0.9) 97%, rgba(0,0,0,1) 100%, #000000 100%)'
                   }}
                 />
                 
@@ -432,24 +439,24 @@ export default function MyStorePage() {
                 `}
               >
                 {/* Background that starts where text begins */}
-                <div className={`absolute inset-0 ${store.theme === 'LIGHT' ? 'bg-white' : 'bg-gradient-to-b from-black via-black/95 to-black'}`} style={{ top: '80px', zIndex: 1 }} />
+                <div className={`absolute inset-0 ${store.theme === 'LIGHT' ? 'bg-white' : 'bg-gradient-to-b from-black via-black/95 to-black'}`} style={{ top: '200px', zIndex: 1 }} />
                 
                 {/* Gradient overlay to cover the split between banner and background */}
                 <div 
                   className="absolute left-0 right-0 w-full pointer-events-none"
                   style={{
-                    top: '-40px',
-                    height: '120px',
+                    top: '40px',
+                    height: '160px',
                     zIndex: 10,
                     background: store.theme === 'LIGHT'
-                      ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.85) 75%, rgba(255,255,255,1) 100%)'
-                      : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 25%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,1) 100%)'
+                      ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 70%, rgba(255,255,255,0.3) 80%, rgba(255,255,255,0.6) 85%, rgba(255,255,255,0.85) 90%, rgba(255,255,255,1) 100%)'
+                      : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0.6) 85%, rgba(0,0,0,0.85) 90%, rgba(0,0,0,1) 100%)'
                   }}
                 />
                 
                 {/* HEADER SECTION - Fixed position from top */}
                 <div className="w-full flex flex-col items-center relative" style={{ zIndex: 50 }}>
-                {/* Name and Location */}
+                {/* Name */}
                 <div className="mb-2">
                   <h2 
                     className={`text-3xl font-bold ${
@@ -476,27 +483,16 @@ export default function MyStorePage() {
                     </p>
                   )}
                   
-                  {store.location && (
-                    <p 
-                      className={`text-sm mt-2 ${store.theme === 'LIGHT' ? 'text-gray-600' : 'text-gray-400'} ${
-                        isEditing 
-                          ? 'cursor-pointer hover:underline decoration-2 underline-offset-4 decoration-[#D4D7DC] transition-all' 
-                          : ''
-                      }`}
-                      onClick={() => isEditing && setShowLocationModal(true)}
-                    >
-                      📍 {store.location}
-                    </p>
-                  )}
                 </div>
 
                 {/* Social Links */}
                 {(social.length > 0 || isEditing) && (
-                  <div className="flex justify-center items-center gap-3 mb-4 mt-4 flex-wrap">
+                  <div className="flex justify-center items-center gap-3 mb-10 mt-5">
                     <SocialIconsDisplay 
                       links={social} 
                       isEditMode={isEditing}
                       onEditClick={handleEditPlatform}
+                      theme={store?.theme}
                       />
                       
                       {/* QUICK ADD LINK BUTTON - Edit mode only */}
@@ -509,12 +505,14 @@ export default function MyStorePage() {
                             w-11 h-11 rounded-full 
                             flex items-center justify-center
                             transition-all duration-200
-                            bg-gradient-to-br from-[#FF72D2] to-[#A16BFE]
+                            bg-[linear-gradient(to_bottom_right,#7341FB_0%,#9D69FF_35%,#EA67FF_69%,#FFDD2B_93%)]
+                            hover:opacity-90
                             hover:scale-105
                             hover:shadow-lg hover:shadow-purple-500/50
                             focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
                             text-white
                             shadow-md
+                            flex-shrink-0
                           "
                         >
                           <Plus className="w-5 h-5" />
@@ -659,7 +657,7 @@ export default function MyStorePage() {
                                       className="h-8 w-8 rounded-lg object-cover shadow-lg"
                                     />
                                   ) : (
-                                    <PlatformIcon iconName={displayIcon} className="h-8 w-8 drop-shadow-lg" />
+                                    <PlatformIcon iconName={displayIcon} className="h-8 w-8 drop-shadow-lg" theme={store?.theme} />
                                   )}
                                 </div>
                                 
@@ -755,7 +753,7 @@ export default function MyStorePage() {
                                   className="h-8 w-8 flex-shrink-0 rounded-lg object-cover"
                                 />
                               ) : (
-                                <PlatformIcon iconName={platformIcon} className="h-8 w-8 flex-shrink-0" />
+                                <PlatformIcon iconName={platformIcon} className="h-8 w-8 flex-shrink-0" theme={store?.theme} />
                               )}
                               <button
                                 onClick={() => handleEditCustomLink(link.id)}
@@ -885,7 +883,7 @@ export default function MyStorePage() {
                                     className="h-8 w-8 rounded-lg object-cover shadow-lg"
                                   />
                                 ) : (
-                                  <PlatformIcon iconName={displayIcon} className="h-8 w-8 drop-shadow-lg" />
+                                  <PlatformIcon iconName={displayIcon} className="h-8 w-8 drop-shadow-lg" theme={store?.theme} />
                                 )}
                               </div>
                               
@@ -1006,6 +1004,7 @@ export default function MyStorePage() {
         onClose={() => setShowLinkManagerModal(false)}
         onSelectPlatform={handleSelectPlatform}
         addedPlatformIds={social.map(link => link.network)}
+        theme={store?.theme}
       />
 
       {/* ADD LINK MODAL (for entering URL) */}
@@ -1017,6 +1016,7 @@ export default function MyStorePage() {
           setSelectedPlatform(null)
         }}
         onAdd={handleAddLink}
+        theme={store?.theme}
       />
 
       {/* DISPLAY NAME EDIT MODAL */}
@@ -1033,14 +1033,6 @@ export default function MyStorePage() {
         currentHandle={store.handle || ''}
         onClose={() => setShowHandleModal(false)}
         onSave={handleSaveHandle}
-      />
-
-      {/* LOCATION EDIT MODAL */}
-      <LocationEditModal
-        open={showLocationModal}
-        currentLocation={store.location || ''}
-        onClose={() => setShowLocationModal(false)}
-        onSave={handleSaveLocation}
       />
 
       {/* BIO EDIT MODAL */}

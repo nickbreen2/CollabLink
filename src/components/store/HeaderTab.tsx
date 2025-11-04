@@ -19,7 +19,6 @@ interface HeaderTabProps {
 export default function HeaderTab({ store, onUpdate, onBack }: HeaderTabProps) {
   const [formData, setFormData] = useState({
     displayName: store.displayName || '',
-    location: store.location || '',
   })
   const [handle, setHandle] = useState(store.handle || '')
   const [handleError, setHandleError] = useState('')
@@ -32,7 +31,6 @@ export default function HeaderTab({ store, onUpdate, onBack }: HeaderTabProps) {
   // Check if there are unsaved changes
   const hasChanges = 
     formData.displayName !== (store.displayName || '') ||
-    formData.location !== (store.location || '') ||
     handle !== store.handle
 
   const handleFieldChange = (field: string, value: any) => {
@@ -189,7 +187,6 @@ export default function HeaderTab({ store, onUpdate, onBack }: HeaderTabProps) {
       // Save all changes
       await onUpdate({
         displayName: formData.displayName,
-        location: formData.location,
         handle: handle,
       })
       
@@ -283,21 +280,6 @@ export default function HeaderTab({ store, onUpdate, onBack }: HeaderTabProps) {
             </p>
           </div>
 
-          {/* Location */}
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => handleFieldChange('location', e.target.value)}
-              placeholder="City, Country"
-              maxLength={60}
-            />
-            <p className="text-xs text-muted-foreground">
-              {formData.location.length}/60
-            </p>
-          </div>
-
           {/* Handle */}
           <div className="space-y-2">
             <Label htmlFor="handle">Handle (@username)</Label>
@@ -351,6 +333,7 @@ export default function HeaderTab({ store, onUpdate, onBack }: HeaderTabProps) {
             disabled={isSaving || isCheckingHandle || !!handleError}
             className="w-full"
             size="lg"
+            variant="gradient"
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>

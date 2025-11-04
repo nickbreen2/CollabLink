@@ -77,23 +77,6 @@ export default function DesignForm({ store, onUpdate, onPreviewUpdate }: DesignF
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => handleThemeChange('LIGHT')}
-              className={`p-4 rounded-lg border-2 transition-all ${
-                selectedTheme === 'LIGHT'
-                  ? 'border-primary bg-primary/5'
-                  : 'border-border hover:border-primary/50'
-              }`}
-            >
-              <div className="space-y-2">
-                <div className="w-full h-16 bg-white rounded border flex items-center justify-center text-xs font-medium text-gray-700">
-                  Light
-                </div>
-                <div className="text-sm font-medium text-center">Light</div>
-              </div>
-            </button>
-
-            <button
-              type="button"
               onClick={() => handleThemeChange('DARK')}
               className={`p-4 rounded-lg border-2 transition-all ${
                 selectedTheme === 'DARK'
@@ -108,6 +91,23 @@ export default function DesignForm({ store, onUpdate, onPreviewUpdate }: DesignF
                 <div className="text-sm font-medium text-center">Dark</div>
               </div>
             </button>
+
+            <button
+              type="button"
+              onClick={() => handleThemeChange('LIGHT')}
+              className={`p-4 rounded-lg border-2 transition-all ${
+                selectedTheme === 'LIGHT'
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:border-primary/50'
+              }`}
+            >
+              <div className="space-y-2">
+                <div className="w-full h-16 bg-white rounded border flex items-center justify-center text-xs font-medium text-gray-700">
+                  Light
+                </div>
+                <div className="text-sm font-medium text-center">Light</div>
+              </div>
+            </button>
           </div>
         </div>
       </div>
@@ -120,6 +120,7 @@ export default function DesignForm({ store, onUpdate, onPreviewUpdate }: DesignF
             disabled={isSaving}
             className="w-full"
             size="lg"
+            variant="gradient"
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>

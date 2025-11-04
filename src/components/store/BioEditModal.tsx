@@ -92,6 +92,7 @@ export default function BioEditModal({
             <Button
               onClick={handleSave}
               disabled={isSaving}
+              variant="gradient"
             >
               {isSaving ? 'Saving...' : 'Save'}
             </Button>

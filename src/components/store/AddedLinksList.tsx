@@ -13,9 +13,10 @@ interface SocialLink {
 interface AddedLinksListProps {
   links: SocialLink[]
   onDelete: (network: string) => void
+  theme?: 'LIGHT' | 'DARK'
 }
 
-export default function AddedLinksList({ links, onDelete }: AddedLinksListProps) {
+export default function AddedLinksList({ links, onDelete, theme }: AddedLinksListProps) {
   if (links.length === 0) {
     return null
   }
@@ -34,7 +35,7 @@ export default function AddedLinksList({ links, onDelete }: AddedLinksListProps)
     <div className="space-y-2">
       {links.map((link) => {
         const platform = getPlatformById(link.network)
-        const Icon = platform ? getPlatformIcon(platform.icon) : null
+        const Icon = platform ? getPlatformIcon(platform.icon, theme) : null
 
         return (
           <div

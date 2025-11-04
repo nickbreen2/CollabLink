@@ -186,6 +186,7 @@ export default function HandleEditModal({
             <Button
               onClick={handleSave}
               disabled={isSaving || isChecking || !!error || isAvailable === false}
+              variant="gradient"
             >
               {isSaving ? 'Saving...' : 'Save'}
             </Button>

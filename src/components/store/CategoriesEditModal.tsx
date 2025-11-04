@@ -127,6 +127,7 @@ export default function CategoriesEditModal({
             <Button
               onClick={handleSave}
               disabled={isSaving}
+              variant="gradient"
             >
               {isSaving ? 'Saving...' : 'Save'}
             </Button>

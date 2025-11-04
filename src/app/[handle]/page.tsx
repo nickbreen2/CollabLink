@@ -91,14 +91,40 @@ export default function PublicStorePage() {
     .toUpperCase() || '?'
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
-      <div className="relative w-full max-w-[540px]">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900 relative">
+      {/* Blurred background image - Public view only */}
+      {store.avatarUrl && (
+        <>
+          <div 
+            className="fixed inset-0 overflow-hidden pointer-events-none"
+            style={{
+              backgroundImage: `url(${store.avatarUrl})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              filter: 'blur(40px)',
+              transform: 'scale(1.1)',
+              opacity: 0.25,
+              zIndex: 0,
+            }}
+          />
+          {/* Gradient overlay to fade blurred background to white at bottom */}
+          <div 
+            className="fixed inset-0 pointer-events-none"
+            style={{
+              background: 'linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.6) 85%, rgba(255,255,255,0.85) 95%, rgba(255,255,255,1) 100%)',
+              zIndex: 1,
+            }}
+          />
+        </>
+      )}
+      <div className="relative w-full max-w-[540px]" style={{ zIndex: 10 }}>
         {/* Store Card */}
         <div
           className={`
             relative w-full overflow-hidden rounded-3xl border shadow-xl
-            ring-1 ring-black/10 dark:ring-white/10
-            ${store.theme === 'LIGHT' ? 'bg-white text-black' : 'bg-black text-white border-gray-800'}
+            ring-1 ring-black/30 dark:ring-white/30
+            ${store.theme === 'LIGHT' ? 'bg-white text-black border-black/30' : 'bg-black text-white border-gray-800/30'}
           `}
         >
           {/* Banner with Profile Image as background */}
@@ -115,8 +141,8 @@ export default function PublicStorePage() {
                 bottom: '-1px',
                 height: '100%',
                 background: store.theme === 'LIGHT'
-                  ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 97%, rgba(255,255,255,0.7) 98%, rgba(255,255,255,1) 99%, #FFFFFF 99%)'
-                  : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 97%, rgba(0,0,0,0.7) 98%, rgba(0,0,0,1) 99%, #000000 99%)'
+                  ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 85%, rgba(255,255,255,0.2) 88%, rgba(255,255,255,0.5) 91%, rgba(255,255,255,0.75) 94%, rgba(255,255,255,0.9) 97%, rgba(255,255,255,1) 100%, #FFFFFF 100%)'
+                  : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 85%, rgba(0,0,0,0.2) 88%, rgba(0,0,0,0.5) 91%, rgba(0,0,0,0.75) 94%, rgba(0,0,0,0.9) 97%, rgba(0,0,0,1) 100%, #000000 100%)'
               }}
             />
           </div>
@@ -125,23 +151,23 @@ export default function PublicStorePage() {
           <div
             className={`
               relative z-20 w-full flex flex-col items-center text-center
-              px-6 pt-6 pb-10 sm:px-10 sm:pt-8
-              -translate-y-16
+              px-6 pt-6 pb-[25px] sm:px-10 sm:pt-8
+              -translate-y-32
             `}
           >
             {/* Background that starts where text begins */}
-            <div className={`absolute inset-0 ${store.theme === 'LIGHT' ? 'bg-white' : 'bg-gradient-to-b from-black via-black/95 to-black'}`} style={{ top: '40px', zIndex: 1 }} />
+            <div className={`absolute inset-0 ${store.theme === 'LIGHT' ? 'bg-white' : 'bg-gradient-to-b from-black via-black/95 to-black'}`} style={{ top: '200px', zIndex: 1 }} />
             
             {/* Gradient overlay to cover the split between banner and background */}
             <div 
               className="absolute left-0 right-0 w-full pointer-events-none"
               style={{
-                top: '-20px',
-                height: '70px',
+                top: '40px',
+                height: '160px',
                 zIndex: 10,
                 background: store.theme === 'LIGHT'
-                  ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 15%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.88) 45%, rgba(255,255,255,0.96) 60%, rgba(255,255,255,1) 70%, #FFFFFF 100%)'
-                  : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 15%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.88) 45%, rgba(0,0,0,0.96) 60%, rgba(0,0,0,1) 70%, #000000 100%)'
+                  ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 70%, rgba(255,255,255,0.3) 80%, rgba(255,255,255,0.6) 85%, rgba(255,255,255,0.85) 90%, rgba(255,255,255,1) 100%)'
+                  : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0.6) 85%, rgba(0,0,0,0.85) 90%, rgba(0,0,0,1) 100%)'
               }}
             />
             
@@ -160,17 +186,12 @@ export default function PublicStorePage() {
                   </p>
                 )}
                 
-                {store.location && (
-                  <p className={`text-sm mt-2 ${store.theme === 'LIGHT' ? 'text-gray-600' : 'text-gray-400'}`}>
-                    📍 {store.location}
-                  </p>
-                )}
               </div>
 
               {/* Social Links */}
               {social.length > 0 && (
-                <div className="flex justify-center items-center gap-3 mb-4 mt-4 flex-wrap">
-                  <SocialIconsDisplay links={social} />
+                <div className="flex justify-center items-center gap-3 mb-10 mt-5">
+                  <SocialIconsDisplay links={social} theme={store.theme} />
                 </div>
               )}
 
@@ -245,7 +266,7 @@ export default function PublicStorePage() {
                                 className="h-8 w-8 rounded-lg object-cover shadow-lg"
                               />
                             ) : (
-                              <PlatformIcon iconName={displayIcon} className="h-8 w-8 drop-shadow-lg" />
+                              <PlatformIcon iconName={displayIcon} className="h-8 w-8 drop-shadow-lg" theme={store.theme} />
                             )}
                           </div>
                           
@@ -285,7 +306,7 @@ export default function PublicStorePage() {
                             className="h-8 w-8 flex-shrink-0 rounded-lg object-cover"
                           />
                         ) : (
-                          <PlatformIcon iconName={platformIcon} className="h-8 w-8 flex-shrink-0" />
+                          <PlatformIcon iconName={platformIcon} className="h-8 w-8 flex-shrink-0" theme={store.theme} />
                         )}
                         <span className="flex-1 text-center">{link.title}</span>
                         <div className="w-8" />

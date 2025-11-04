@@ -78,17 +78,12 @@ export default function StorePreviewCard({ store }: StorePreviewCardProps) {
               </p>
             )}
             
-            {store.location && (
-              <p className="text-sm text-muted-foreground mt-1">
-                📍 {store.location}
-              </p>
-            )}
           </div>
 
           {/* Social Links */}
           {social.length > 0 && (
-            <div className="flex gap-3 pt-4">
-              <SocialIconsDisplay links={social} />
+            <div className="flex justify-center items-center gap-3 pt-4">
+              <SocialIconsDisplay links={social} theme={store.theme} />
             </div>
           )}
 

@@ -180,6 +180,7 @@ export default function CustomLinkManagerTab({ store, onUpdate, onBack, initialV
       <AddCustomLinkPage
         onBack={handleBackToManager}
         onSave={handleAddLink}
+        theme={store.theme}
       />
     )
   }
@@ -192,6 +193,7 @@ export default function CustomLinkManagerTab({ store, onUpdate, onBack, initialV
         onBack={handleBackToManager}
         onSave={handleUpdateLink}
         onDelete={handleDeleteLink}
+        theme={store.theme}
       />
     )
   }
@@ -220,7 +222,8 @@ export default function CustomLinkManagerTab({ store, onUpdate, onBack, initialV
           {/* Add Link Button */}
           <Button
             type="button"
-            className="w-full mb-4 bg-[#0F172A] text-white hover:bg-[#1E293B] border-[#0F172A] hover:border-[#1E293B] transition-colors"
+            className="w-full mb-4"
+            variant="gradient"
             onClick={() => setCurrentView('add')}
           >
             <Plus className="w-4 h-4 mr-2 text-white" />

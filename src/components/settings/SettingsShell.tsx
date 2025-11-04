@@ -117,11 +117,11 @@ export default function SettingsShell({ user }: SettingsShellProps) {
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left",
                     isActive
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-[#EAECF2] text-[#1F2124] dark:bg-[#EAECF2] dark:text-[#1F2124]"
                       : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   )}
                 >
-                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-[#1F2124] dark:text-[#1F2124]")} />
                   <span>{section.label}</span>
                 </button>
               );
@@ -163,11 +163,11 @@ export default function SettingsShell({ user }: SettingsShellProps) {
                     className={cn(
                       "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left",
                       isActive
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-[#EAECF2] text-[#1F2124] dark:bg-[#EAECF2] dark:text-[#1F2124]"
                         : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                     )}
                   >
-                    <Icon className="h-5 w-5 flex-shrink-0" />
+                    <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-[#1F2124] dark:text-[#1F2124]")} />
                     <span>{section.label}</span>
                   </button>
                 );

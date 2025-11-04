@@ -22,9 +22,10 @@ interface EditCustomLinkPageProps {
   onBack: () => void
   onSave: (link: CustomLink) => void
   onDelete: (linkId: string) => void
+  theme?: 'LIGHT' | 'DARK'
 }
 
-export default function EditCustomLinkPage({ link, onBack, onSave, onDelete }: EditCustomLinkPageProps) {
+export default function EditCustomLinkPage({ link, onBack, onSave, onDelete, theme }: EditCustomLinkPageProps) {
   const [title, setTitle] = useState(link.title)
   const [url, setUrl] = useState(link.url)
   const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>(link.thumbnailUrl)
@@ -304,7 +305,7 @@ export default function EditCustomLinkPage({ link, onBack, onSave, onDelete }: E
                       className="h-8 w-8 flex-shrink-0 rounded-lg object-cover"
                     />
                   ) : (
-                    <PlatformIcon iconName={displayIcon} className="h-8 w-8 flex-shrink-0" />
+                    <PlatformIcon iconName={displayIcon} className="h-8 w-8 flex-shrink-0" theme={theme} />
                   )}
                   
                   {/* Title (live preview) */}
@@ -327,7 +328,7 @@ export default function EditCustomLinkPage({ link, onBack, onSave, onDelete }: E
                         className="h-8 w-8 rounded-lg object-cover shadow-lg"
                       />
                     ) : (
-                      <PlatformIcon iconName={displayIcon} className="h-8 w-8 drop-shadow-lg" />
+                      <PlatformIcon iconName={displayIcon} className="h-8 w-8 drop-shadow-lg" theme={theme} />
                     )}
                   </div>
 
@@ -488,7 +489,8 @@ export default function EditCustomLinkPage({ link, onBack, onSave, onDelete }: E
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="w-full bg-[#0E172A] hover:bg-[#1a2942] text-white font-semibold py-6 text-lg transition-colors"
+            className="w-full font-semibold py-6 text-lg"
+            variant="gradient"
           >
             {isSaving ? 'Saving...' : 'Save'}
           </Button>

@@ -35,14 +35,16 @@ interface DraggableAddedLinksListProps {
   links: SocialLink[]
   onDelete: (network: string) => void
   onReorder: (newLinks: SocialLink[]) => void
+  theme?: 'LIGHT' | 'DARK'
 }
 
 interface SortableLinkItemProps {
   link: SocialLink
   onDelete: (network: string) => void
+  theme?: 'LIGHT' | 'DARK'
 }
 
-function SortableLinkItem({ link, onDelete }: SortableLinkItemProps) {
+function SortableLinkItem({ link, onDelete, theme }: SortableLinkItemProps) {
   const {
     attributes,
     listeners,
@@ -53,7 +55,7 @@ function SortableLinkItem({ link, onDelete }: SortableLinkItemProps) {
   } = useSortable({ id: link.network })
 
   const platform = getPlatformById(link.network)
-  const Icon = platform ? getPlatformIcon(platform.icon) : null
+  const Icon = platform ? getPlatformIcon(platform.icon, theme) : null
 
   const formatUrl = (url: string): string => {
     try {
@@ -129,11 +131,11 @@ function SortableLinkItem({ link, onDelete }: SortableLinkItemProps) {
   )
 }
 
-function DragOverlayItem({ link }: { link: SocialLink | null }) {
+function DragOverlayItem({ link, theme }: { link: SocialLink | null, theme?: 'LIGHT' | 'DARK' }) {
   if (!link) return null
 
   const platform = getPlatformById(link.network)
-  const Icon = platform ? getPlatformIcon(platform.icon) : null
+  const Icon = platform ? getPlatformIcon(platform.icon, theme) : null
 
   const formatUrl = (url: string): string => {
     try {
@@ -169,6 +171,7 @@ export default function DraggableAddedLinksList({
   links,
   onDelete,
   onReorder,
+  theme,
 }: DraggableAddedLinksListProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [items, setItems] = useState(links)
@@ -240,13 +243,13 @@ export default function DraggableAddedLinksList({
       >
         <div className="space-y-2">
           {items.map((link) => (
-            <SortableLinkItem key={link.network} link={link} onDelete={onDelete} />
+            <SortableLinkItem key={link.network} link={link} onDelete={onDelete} theme={theme} />
           ))}
         </div>
       </SortableContext>
       <DragOverlay>
         {activeId ? (
-          <DragOverlayItem link={items.find((l) => l.network === activeId) || null} />
+          <DragOverlayItem link={items.find((l) => l.network === activeId) || null} theme={theme} />
         ) : null}
       </DragOverlay>
     </DndContext>

@@ -313,6 +313,7 @@ export default function ManagePlatformsTab({ store, onUpdate, onBack, initialVie
         onSelectPlatform={handleSelectPlatform}
         onBack={onBack}
         addedPlatformIds={socialLinks.map(link => link.network)}
+        theme={store.theme}
       />
       <AddLinkModal
         platform={selectedPlatform}
@@ -322,6 +323,7 @@ export default function ManagePlatformsTab({ store, onUpdate, onBack, initialVie
           setSelectedPlatform(null)
         }}
         onAdd={handleAddLink}
+        theme={store.theme}
       />
     </>
   )

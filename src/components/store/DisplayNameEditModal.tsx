@@ -97,6 +97,7 @@ export default function DisplayNameEditModal({
             <Button
               onClick={handleSave}
               disabled={isSaving || !displayName.trim()}
+              variant="gradient"
             >
               {isSaving ? 'Saving...' : 'Save'}
             </Button>

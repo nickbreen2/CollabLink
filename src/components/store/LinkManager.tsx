@@ -11,12 +11,14 @@ interface LinkManagerProps {
   onSelectPlatform: (platform: Platform) => void
   onBack: () => void
   addedPlatformIds?: string[]
+  theme?: 'LIGHT' | 'DARK'
 }
 
 export default function LinkManager({ 
   onSelectPlatform, 
   onBack,
-  addedPlatformIds = []
+  addedPlatformIds = [],
+  theme
 }: LinkManagerProps) {
   const [searchQuery, setSearchQuery] = useState('')
   // Start with all categories collapsed (empty array)
@@ -105,7 +107,7 @@ export default function LinkManager({
                   {/* Right: Preview Icons (3 icons inline) - No background, tight spacing */}
                   <div className="flex items-center gap-1 pointer-events-none mr-1.5">
                     {previewPlatforms.map((platform) => {
-                      const Icon = getPlatformIcon(platform.icon)
+                      const Icon = getPlatformIcon(platform.icon, theme)
                       const isAdded = addedPlatformIds.includes(platform.id)
 
                       return (
@@ -136,7 +138,7 @@ export default function LinkManager({
                   <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3 mx-2 mb-2">
                     <div className="grid grid-cols-3 gap-3">
                       {filteredPlatforms.map((platform) => {
-                        const Icon = getPlatformIcon(platform.icon)
+                        const Icon = getPlatformIcon(platform.icon, theme)
                         const isAdded = addedPlatformIds.includes(platform.id)
 
                         return (
@@ -179,7 +181,7 @@ export default function LinkManager({
                   <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3 mx-2 mb-2">
                     <div className="grid grid-cols-3 gap-3">
                       {filteredPlatforms.map((platform) => {
-                        const Icon = getPlatformIcon(platform.icon)
+                        const Icon = getPlatformIcon(platform.icon, theme)
                         const isAdded = addedPlatformIds.includes(platform.id)
 
                         return (

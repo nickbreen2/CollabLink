@@ -70,7 +70,7 @@ export default function DashboardNav({ user }: DashboardNavProps) {
     <aside className="w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 flex flex-col h-screen sticky top-0">
       <div className="p-6 flex-shrink-0">
         <Image 
-          src="/CollabLink(04).svg" 
+          src="/icons/collablink.svg" 
           alt="CollabLink" 
           width={200} 
           height={60}
@@ -93,11 +93,11 @@ export default function DashboardNav({ user }: DashboardNavProps) {
               className={cn(
                 'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                 isActive
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'bg-[#EAECF2] text-[#1F2124] dark:bg-[#EAECF2] dark:text-[#1F2124]'
                   : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
               )}
             >
-              <Icon className="h-5 w-5" />
+              <Icon className={cn('h-5 w-5', isActive && 'text-[#1F2124] dark:text-[#1F2124]')} />
               {item.label}
             </Link>
           )

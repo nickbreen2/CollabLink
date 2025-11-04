@@ -77,6 +77,7 @@ export default function BioTab({ store, onUpdate, onBack }: BioTabProps) {
             onClick={handleSave}
             className="w-full"
             disabled={bio === store.bio}
+            variant="gradient"
           >
             Save Bio
           </Button>

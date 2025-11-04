@@ -25,7 +25,6 @@ interface PersonalInfoSectionProps {
     store: {
       handle: string;
       displayName: string | null;
-      location: string | null;
     } | null;
   };
 }
@@ -37,7 +36,6 @@ export default function PersonalInfoSection({ user }: PersonalInfoSectionProps) 
   const [birthDate, setBirthDate] = React.useState(
     user.birthDate ? new Date(user.birthDate).toISOString().split("T")[0] : ""
   );
-  const [location, setLocation] = React.useState(user.store?.location || "");
   const [isCheckingUsername, setIsCheckingUsername] = React.useState(false);
   const [usernameError, setUsernameError] = React.useState("");
   const [usernameAvailable, setUsernameAvailable] = React.useState<boolean | null>(null);
@@ -63,10 +61,9 @@ export default function PersonalInfoSection({ user }: PersonalInfoSectionProps) 
     const hasChanges =
       displayName !== (user.store?.displayName || "") ||
       username !== (user.store?.handle || "") ||
-      birthDate !== (user.birthDate ? new Date(user.birthDate).toISOString().split("T")[0] : "") ||
-      location !== (user.store?.location || "");
+      birthDate !== (user.birthDate ? new Date(user.birthDate).toISOString().split("T")[0] : "");
     setIsDirty(hasChanges);
-  }, [displayName, username, birthDate, location, user]);
+  }, [displayName, username, birthDate, user]);
 
   // Username validation and uniqueness check
   const checkUsername = React.useCallback(
@@ -182,7 +179,6 @@ export default function PersonalInfoSection({ user }: PersonalInfoSectionProps) 
           displayName,
           username,
           birthDate: birthDate || null,
-          location,
         }),
       });
 
@@ -375,22 +371,13 @@ export default function PersonalInfoSection({ user }: PersonalInfoSectionProps) 
             {birthDateError && <p className="text-sm text-destructive">{birthDateError}</p>}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="City, State"
-            />
-            <p className="text-xs text-muted-foreground">Where you're based</p>
-          </div>
         </div>
 
         <div className="flex justify-end">
           <Button
             onClick={handleSave}
             disabled={!isDirty || isSaving || !!usernameError || !!birthDateError || isCheckingUsername}
+            variant="gradient"
           >
             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Changes

@@ -375,7 +375,8 @@ export default function CollabRequestModal({
           {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-fuchsia-500 to-indigo-500 hover:from-fuchsia-600 hover:to-indigo-600 text-white font-semibold py-6 rounded-xl"
+            variant="gradient"
+            className="w-full font-semibold py-6 rounded-xl"
             disabled={isSelfView || submitting}
           >
             {submitting ? (
@@ -384,7 +385,7 @@ export default function CollabRequestModal({
                 Sending...
               </span>
             ) : (
-              <>Send Collaboration Request 🚀</>
+              <>Send Collaboration Request</>
             )}
           </Button>
         </form>

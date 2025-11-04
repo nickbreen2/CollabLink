@@ -20,6 +20,7 @@ interface AddLinkModalProps {
   open: boolean
   onClose: () => void
   onAdd: (url: string) => void
+  theme?: 'LIGHT' | 'DARK'
 }
 
 export default function AddLinkModal({
@@ -27,6 +28,7 @@ export default function AddLinkModal({
   open,
   onClose,
   onAdd,
+  theme,
 }: AddLinkModalProps) {
   const [url, setUrl] = useState('')
   const [error, setError] = useState('')
@@ -68,7 +70,7 @@ export default function AddLinkModal({
 
   if (!platform) return null
 
-  const Icon = getPlatformIcon(platform.icon)
+  const Icon = getPlatformIcon(platform.icon, theme)
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>

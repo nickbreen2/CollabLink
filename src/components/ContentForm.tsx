@@ -39,7 +39,6 @@ const CONTENT_CATEGORIES = [
 export default function ContentForm({ store, onUpdate, onOpenLinkManager }: ContentFormProps) {
   const [formData, setFormData] = useState({
     displayName: store.displayName || '',
-    location: store.location || '',
     bio: store.bio || '',
   })
   const [categories, setCategories] = useState<string[]>(store.categories || [])
@@ -186,6 +185,7 @@ export default function ContentForm({ store, onUpdate, onOpenLinkManager }: Cont
           onSelectPlatform={handleSelectPlatform}
           onBack={() => setShowLinkManager(false)}
           addedPlatformIds={socialLinks.map(link => link.network)}
+          theme={store.theme}
         />
         <AddLinkModal
           platform={selectedPlatform}
@@ -195,6 +195,7 @@ export default function ContentForm({ store, onUpdate, onOpenLinkManager }: Cont
             setSelectedPlatform(null)
           }}
           onAdd={handleAddLink}
+          theme={store.theme}
         />
       </>
     )
@@ -257,21 +258,6 @@ export default function ContentForm({ store, onUpdate, onOpenLinkManager }: Cont
         </p>
       </div>
 
-      {/* Location */}
-      <div className="space-y-2">
-        <Label htmlFor="location">Location</Label>
-        <Input
-          id="location"
-          value={formData.location}
-          onChange={(e) => handleFieldChange('location', e.target.value)}
-          placeholder="City, Country"
-          maxLength={60}
-        />
-        <p className="text-xs text-muted-foreground">
-          {formData.location.length}/60
-        </p>
-      </div>
-
       {/* Bio */}
       <div className="space-y-2">
         <Label htmlFor="bio">Bio</Label>
@@ -296,6 +282,7 @@ export default function ContentForm({ store, onUpdate, onOpenLinkManager }: Cont
         <AddedLinksList 
           links={socialLinks} 
           onDelete={handleDeleteLink}
+          theme={store.theme}
         />
 
         {/* Add New Link Button */}
