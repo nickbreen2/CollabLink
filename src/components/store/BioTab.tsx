@@ -86,3 +86,4 @@ export default function BioTab({ store, onUpdate, onBack }: BioTabProps) {
     </div>
   )
 }
+

@@ -40,6 +40,7 @@ model CreatorStore {
   customLinks     Json?
   highlights      Json?
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collabRequests  CollabRequest[]
 }
 
 enum Role {
@@ -57,4 +58,27 @@ enum AccountStatus {
   PAUSED
   PENDING_DELETION
   DELETED
+}
+
+model CollabRequest {
+  id          String       @id @default(cuid())
+  creatorId   String
+  senderName  String
+  brandName   String?
+  senderEmail String
+  budget      Float?
+  description String?
+  links       String[]
+  status      CollabStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  creator     CreatorStore @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId])
+}
+
+enum CollabStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }

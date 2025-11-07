@@ -29,6 +29,16 @@ export async function GET() {
       },
     })
 
+    // Debug: Log links for each request
+    console.log('📋 Fetched collab requests:', requests.map(r => ({
+      id: r.id,
+      senderName: r.senderName,
+      links: r.links,
+      linksType: typeof r.links,
+      linksIsArray: Array.isArray(r.links),
+      linksLength: Array.isArray(r.links) ? r.links.length : 'N/A'
+    })))
+
     // Get counts by status
     const pending = requests.filter((r) => r.status === 'PENDING').length
     const accepted = requests.filter((r) => r.status === 'ACCEPTED').length

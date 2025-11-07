@@ -7,10 +7,27 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     console.log('📥 Received collab request:', JSON.stringify(body, null, 2))
+    console.log('🔗 Links in raw body:', body.links)
+    console.log('🔗 Links type:', typeof body.links)
+    console.log('🔗 Links is array:', Array.isArray(body.links))
+    console.log('🔗 Links length:', Array.isArray(body.links) ? body.links.length : 'N/A')
 
     // Validate the request body
-    const validatedData = CollabRequestSchema.parse(body)
-    console.log('✅ Validated data:', JSON.stringify(validatedData, null, 2))
+    let validatedData
+    try {
+      validatedData = CollabRequestSchema.parse(body)
+      console.log('✅ Validated data:', JSON.stringify(validatedData, null, 2))
+      console.log('🔗 Links after validation:', validatedData.links)
+      console.log('🔗 Links type after validation:', typeof validatedData.links)
+      console.log('🔗 Links is array after validation:', Array.isArray(validatedData.links))
+      console.log('🔗 Links length after validation:', Array.isArray(validatedData.links) ? validatedData.links.length : 'N/A')
+    } catch (validationError) {
+      console.error('❌ Validation error:', validationError)
+      if (validationError instanceof z.ZodError) {
+        console.error('Validation errors:', JSON.stringify(validationError.errors, null, 2))
+      }
+      throw validationError
+    }
 
     // Check if creator exists
     const creator = await prisma.creatorStore.findUnique({
@@ -31,6 +48,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Ensure links is always an array (validation transform should handle this, but double-check)
+    const linksArray = Array.isArray(validatedData.links) 
+      ? validatedData.links.filter(link => {
+          if (!link || typeof link !== 'string') return false
+          const trimmed = link.trim()
+          // Ensure it's a valid URL format
+          return trimmed !== '' && (trimmed.startsWith('http://') || trimmed.startsWith('https://'))
+        })
+      : []
+    
+    console.log('🔗 Links to save:', linksArray)
+    console.log('🔗 Links count to save:', linksArray.length)
+    if (linksArray.length > 0) {
+      console.log('🔗 Each link to save:', linksArray.map((link, i) => `${i + 1}. ${link}`))
+    }
+
     // Create the collab request
     const collabRequest = await prisma.collabRequest.create({
       data: {
@@ -40,9 +73,15 @@ export async function POST(request: NextRequest) {
         senderEmail: validatedData.senderEmail,
         budget: validatedData.budget ? Number(validatedData.budget) : null,
         description: validatedData.description || null,
-        links: validatedData.links || [],
+        links: linksArray,
         status: 'PENDING',
       },
+    })
+    
+    console.log('💾 Saved collab request with links:', {
+      id: collabRequest.id,
+      links: collabRequest.links,
+      linksCount: collabRequest.links?.length || 0
     })
 
     // TODO: Send Brevo email notification

@@ -135,10 +135,40 @@ export default function CollabRequestModal({
     
     if (!validateForm()) return
 
+    // Check if there's a link in the input that hasn't been added yet
+    let finalLinks = [...links]
+    if (linkInput.trim()) {
+      const value = linkInput.trim()
+      
+      // Check if we can add more links
+      if (finalLinks.length >= 5) {
+        setErrors({ ...errors, links: 'Maximum 5 links allowed' })
+        return
+      }
+
+      // Validate the URL
+      if (!isValidUrl(value)) {
+        setErrors({ ...errors, links: 'Please enter a valid URL' })
+        return
+      }
+
+      // Normalize and check for duplicates
+      const normalized = normalizeUrl(value)
+      if (!finalLinks.includes(normalized)) {
+        finalLinks.push(normalized)
+      }
+    }
+
     setSubmitting(true)
     setSubmitError(null)
 
     try {
+      console.log('📤 Sending collab request with links:', {
+        linksCount: finalLinks.length,
+        links: finalLinks,
+        linksIsArray: Array.isArray(finalLinks)
+      })
+      
       const response = await fetch('/api/collabs/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -149,7 +179,7 @@ export default function CollabRequestModal({
           senderEmail: email.trim(),
           budget: budget ? budget.replace(/[^0-9.]/g, '') : undefined,
           description: description.trim() || undefined,
-          links: links.length > 0 ? links : undefined,
+          links: finalLinks, // Use finalLinks which includes any pending link
         }),
       })
 

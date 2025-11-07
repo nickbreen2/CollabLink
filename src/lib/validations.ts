@@ -112,9 +112,15 @@ export const CollabRequestSchema = z.object({
     }),
   description: z.string().max(1000).optional(),
   links: z
-    .array(z.string().transform(normalizeUrl).pipe(z.string().url()))
-    .max(5, 'Maximum 5 links allowed')
-    .optional(),
+    .union([
+      z.array(z.string().transform(normalizeUrl).pipe(z.string().url())).max(5, 'Maximum 5 links allowed'),
+      z.undefined()
+    ])
+    .optional()
+    .transform((val) => {
+      // Always return an array for consistency
+      return Array.isArray(val) ? val : []
+    }),
 })
 
 export type CollabRequestInput = z.infer<typeof CollabRequestSchema>
