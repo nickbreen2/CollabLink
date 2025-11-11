@@ -13,7 +13,7 @@ import DraggableCustomLinksList from './DraggableCustomLinksList'
 
 interface CustomLinkManagerTabProps {
   store: CreatorStore
-  onUpdate: (data: Partial<CreatorStore>) => void
+  onUpdate: (data: Partial<CreatorStore>) => void | Promise<void>
   onBack: () => void
   initialView?: 'manager' | 'add' | 'edit'
   editingLinkId?: string
@@ -22,7 +22,7 @@ interface CustomLinkManagerTabProps {
 type CustomLinkView = 'manager' | 'add' | 'edit'
 
 export default function CustomLinkManagerTab({ store, onUpdate, onBack, initialView, editingLinkId }: CustomLinkManagerTabProps) {
-  const [customLinks, setCustomLinks] = useState<CustomLink[]>((store.customLinks as CustomLink[]) || [])
+  const [customLinks, setCustomLinks] = useState<CustomLink[]>((store.customLinks as unknown as CustomLink[]) || [])
   // Default to 'add' view instead of 'manager' - go directly to create form
   const [currentView, setCurrentView] = useState<CustomLinkView>(initialView || 'add')
   const [editingLink, setEditingLink] = useState<CustomLink | null>(null)
@@ -65,7 +65,7 @@ export default function CustomLinkManagerTab({ store, onUpdate, onBack, initialV
     
     try {
       // Save immediately (no debounce) to ensure it completes before navigation
-      await onUpdate({ customLinks: newLinks })
+      await onUpdate({ customLinks: newLinks as any })
       
       toast({
         title: 'Link added',
@@ -94,7 +94,7 @@ export default function CustomLinkManagerTab({ store, onUpdate, onBack, initialV
     
     try {
       // Save immediately (no debounce) to ensure it completes before navigation
-      await onUpdate({ customLinks: newLinks })
+      await onUpdate({ customLinks: newLinks as any })
       
       toast({
         title: 'Link updated',
@@ -122,7 +122,7 @@ export default function CustomLinkManagerTab({ store, onUpdate, onBack, initialV
     
     try {
       // Save immediately (no debounce) to ensure it completes before navigation
-      await onUpdate({ customLinks: newLinks })
+      await onUpdate({ customLinks: newLinks as any })
       
       toast({
         title: 'Link removed',
@@ -156,7 +156,7 @@ export default function CustomLinkManagerTab({ store, onUpdate, onBack, initialV
 
     try {
       // Save immediately (no debounce for reordering)
-      await onUpdate({ customLinks: newLinks })
+      await onUpdate({ customLinks: newLinks as any })
     } catch (error) {
       // Revert on error
       setCustomLinks(previousLinks)

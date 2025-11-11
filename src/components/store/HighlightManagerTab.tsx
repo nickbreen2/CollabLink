@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 
 interface HighlightManagerTabProps {
   store: CreatorStore
-  onUpdate: (data: Partial<CreatorStore>) => Promise<void>
+  onUpdate: (data: Partial<CreatorStore>) => void | Promise<void>
   onBack: () => void
   initialView?: HighlightView
   editingHighlightId?: string
@@ -21,13 +21,13 @@ interface HighlightManagerTabProps {
 type HighlightView = 'manager' | 'add' | 'edit'
 
 export default function HighlightManagerTab({ store, onUpdate, onBack, initialView, editingHighlightId }: HighlightManagerTabProps) {
-  const [highlights, setHighlights] = useState<Highlight[]>((store.highlights as Highlight[]) || [])
+  const [highlights, setHighlights] = useState<Highlight[]>((store.highlights as unknown as Highlight[]) || [])
   const [currentView, setCurrentView] = useState<HighlightView>(initialView || 'manager')
   const [editingHighlight, setEditingHighlight] = useState<Highlight | null>(null)
 
   // Sync highlights with store prop when it changes
   useEffect(() => {
-    const storeHighlights = (store.highlights as Highlight[]) || []
+    const storeHighlights = (store.highlights as unknown as Highlight[]) || []
     setHighlights(storeHighlights)
   }, [store.highlights])
 
@@ -70,7 +70,7 @@ export default function HighlightManagerTab({ store, onUpdate, onBack, initialVi
     setHighlights(newHighlights)
     
     try {
-      const updatedStore = await onUpdate({ highlights: newHighlights })
+      const updatedStore = await onUpdate({ highlights: newHighlights as any }) as any
       console.log('Highlight saved successfully, updated store:', updatedStore)
       
       // Update local state with the server response to ensure consistency
@@ -105,7 +105,7 @@ export default function HighlightManagerTab({ store, onUpdate, onBack, initialVi
     setHighlights(newHighlights)
     
     try {
-      await onUpdate({ highlights: newHighlights })
+      await onUpdate({ highlights: newHighlights as any })
       
       toast({
         title: 'Highlight updated',
@@ -131,7 +131,7 @@ export default function HighlightManagerTab({ store, onUpdate, onBack, initialVi
     setHighlights(newHighlights)
     
     try {
-      await onUpdate({ highlights: newHighlights })
+      await onUpdate({ highlights: newHighlights as any })
       
       toast({
         title: 'Highlight removed',

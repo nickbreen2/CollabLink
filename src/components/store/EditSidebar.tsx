@@ -13,7 +13,7 @@ import DesignForm from '../DesignForm'
 
 interface EditSidebarProps {
   store: CreatorStore
-  onUpdate: (data: Partial<CreatorStore>) => void
+  onUpdate: (data: Partial<CreatorStore>) => void | Promise<void>
   onPreviewUpdate?: (data: Partial<CreatorStore>) => void
   initialView?: SidebarView
   initialCustomLinkView?: 'manager' | 'add' | 'edit'

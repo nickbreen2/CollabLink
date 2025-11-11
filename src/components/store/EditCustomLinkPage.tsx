@@ -534,7 +534,7 @@ export default function EditCustomLinkPage({ link, onBack, onSave, onDelete, the
               onClick={() => setCustomIconUrl(undefined)}
               className="flex items-center gap-2 text-sm text-red-500 hover:text-red-600 transition-colors w-full justify-center"
             >
-              <X className="h-4 w-4" />
+              <XIcon className="h-4 w-4" />
               Reset to platform icon
             </button>
           )}

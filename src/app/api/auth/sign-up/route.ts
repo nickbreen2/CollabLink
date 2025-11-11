@@ -65,7 +65,7 @@ export async function POST(request: Request) {
           handle,
           displayName,
           avatarUrl: '/icons/Profile Image theme colors-not saturated-2.svg',
-          social: Object.keys(socialData).length > 0 ? socialData : null
+          social: Object.keys(socialData).length > 0 ? socialData : undefined
         } 
       });
       return u;

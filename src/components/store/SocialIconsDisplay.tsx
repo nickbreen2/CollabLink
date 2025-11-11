@@ -133,7 +133,7 @@ export default function SocialIconsDisplay({ links, isEditMode = false, onEditCl
         const platform = getPlatformById(link.network)
         const Icon = platform ? getPlatformIcon(platform.icon, theme) : null
 
-        if (!Icon) return null
+        if (!Icon || !platform) return null
 
         // In edit mode, render as button to open editor
         if (isEditMode && onEditClick) {

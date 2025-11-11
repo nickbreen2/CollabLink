@@ -11,7 +11,7 @@ import { toast } from '@/components/ui/use-toast'
 
 interface HeaderTabProps {
   store: CreatorStore
-  onUpdate: (data: Partial<CreatorStore>) => void
+  onUpdate: (data: Partial<CreatorStore>) => void | Promise<void>
   onBack: () => void
 }
 

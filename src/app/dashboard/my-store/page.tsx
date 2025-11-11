@@ -19,7 +19,7 @@ import { getPlatformById, Platform } from '@/lib/platformCategories'
 import LinkManagerModal from '@/components/store/LinkManagerModal'
 import AddLinkModal from '@/components/store/AddLinkModal'
 import SelfCollabModal from '@/components/store/SelfCollabModal'
-import { CustomLink, Highlight } from '@/types'
+import { CustomLink, Highlight, StoreUpdatePayload, SocialLink } from '@/types'
 import { PlatformIcon } from '@/components/icons/PlatformIcons'
 import { detectPlatformFromUrl } from '@/lib/detectPlatform'
 import VideoEmbed from '@/components/store/VideoEmbed'
@@ -90,7 +90,7 @@ export default function MyStorePage() {
   const [showBioModal, setShowBioModal] = useState(false)
   const [showCategoriesModal, setShowCategoriesModal] = useState(false)
   const [showSelfCollabModal, setShowSelfCollabModal] = useState(false)
-  const [sidebarView, setSidebarView] = useState<'overview' | 'header' | 'platforms' | 'customLinks' | 'highlights' | undefined>(undefined)
+  const [sidebarView, setSidebarView] = useState<'overview' | 'header' | 'platforms' | 'customLinks' | 'highlights' | 'bio' | undefined>(undefined)
   const [customLinkView, setCustomLinkView] = useState<'manager' | 'add' | 'edit' | undefined>(undefined)
   const [editingCustomLinkId, setEditingCustomLinkId] = useState<string | undefined>(undefined)
   const [platformView, setPlatformView] = useState<'add' | 'edit' | undefined>(undefined)
@@ -119,7 +119,7 @@ export default function MyStorePage() {
     }
   }
 
-  const handleUpdate = async (updates: Partial<CreatorStore>) => {
+  const handleUpdate = async (updates: StoreUpdatePayload) => {
     if (!store) return
 
     try {
@@ -149,6 +149,24 @@ export default function MyStorePage() {
       })
       throw error // Re-throw so callers can handle the error
     }
+  }
+
+  // Wrapper to convert Partial<CreatorStore> to StoreUpdatePayload for EditSidebar
+  const handleUpdateForSidebar = async (updates: Partial<CreatorStore>) => {
+    // Convert null values to undefined and filter out non-updatable fields
+    const payload: StoreUpdatePayload = {}
+    
+    if (updates.displayName !== undefined) payload.displayName = updates.displayName ?? undefined
+    if (updates.location !== undefined) payload.location = updates.location ?? undefined
+    if (updates.bio !== undefined) payload.bio = updates.bio ?? undefined
+    if (updates.avatarUrl !== undefined) payload.avatarUrl = updates.avatarUrl ?? undefined
+    if (updates.theme !== undefined) payload.theme = updates.theme ?? undefined
+    if (updates.categories !== undefined) payload.categories = updates.categories ?? undefined
+    if (updates.social !== undefined) payload.social = (updates.social as unknown as SocialLink[]) ?? undefined
+    if (updates.customLinks !== undefined) payload.customLinks = (updates.customLinks as unknown as CustomLink[]) ?? undefined
+    if (updates.highlights !== undefined) payload.highlights = (updates.highlights as unknown as Highlight[]) ?? undefined
+    
+    return await handleUpdate(payload)
   }
 
   // Preview-only update (updates local state without saving to backend)
@@ -194,16 +212,16 @@ export default function MyStorePage() {
   }
   
   // Convert social to array format - handle both array and object formats
-  const social = Array.isArray(store.social) 
-    ? store.social 
-    : store.social && typeof store.social === 'object'
+  const social: SocialLink[] = Array.isArray(store.social) 
+    ? (store.social as unknown as SocialLink[]).filter((l): l is SocialLink => l !== null && typeof l === 'object' && 'network' in l && 'url' in l)
+    : store.social && typeof store.social === 'object' && !Array.isArray(store.social)
     ? Object.entries(store.social).map(([network, value]) => ({ 
         network, 
         url: typeof value === 'string' ? value : String(value)
       }))
     : []
-  const customLinks = (store.customLinks as CustomLink[]) || []
-  const highlights = (store.highlights as Highlight[]) || []
+  const customLinks = (store.customLinks as unknown as CustomLink[]) || []
+  const highlights = (store.highlights as unknown as Highlight[]) || []
   
   const initials = store.displayName
     ?.split(' ')
@@ -272,7 +290,7 @@ export default function MyStorePage() {
   const handleMoveCustomLinkUp = async (linkId: string) => {
     if (!store) return
     
-    const customLinks = (store.customLinks as CustomLink[]) || []
+    const customLinks = (store.customLinks as unknown as CustomLink[]) || []
     const currentIndex = customLinks.findIndex(l => l.id === linkId)
     
     if (currentIndex <= 0) return // Already at top or not found
@@ -287,7 +305,7 @@ export default function MyStorePage() {
   const handleMoveCustomLinkDown = async (linkId: string) => {
     if (!store) return
     
-    const customLinks = (store.customLinks as CustomLink[]) || []
+    const customLinks = (store.customLinks as unknown as CustomLink[]) || []
     const currentIndex = customLinks.findIndex(l => l.id === linkId)
     
     if (currentIndex < 0 || currentIndex >= customLinks.length - 1) return // Already at bottom or not found
@@ -302,7 +320,7 @@ export default function MyStorePage() {
   const handleDeleteCustomLink = (linkId: string) => {
     if (!store) return
     
-    const customLinks = (store.customLinks as CustomLink[]) || []
+    const customLinks = (store.customLinks as unknown as CustomLink[]) || []
     const linkToDelete = customLinks.find(l => l.id === linkId)
     
     if (!linkToDelete) return
@@ -330,9 +348,9 @@ export default function MyStorePage() {
     if (!selectedPlatform || !store) return
 
     // Convert social to array format - handle both array and object formats
-    const social = Array.isArray(store.social) 
-      ? store.social 
-      : store.social && typeof store.social === 'object'
+    const social: SocialLink[] = Array.isArray(store.social) 
+      ? (store.social as unknown as SocialLink[]).filter((l): l is SocialLink => l !== null && typeof l === 'object' && 'network' in l && 'url' in l)
+      : store.social && typeof store.social === 'object' && !Array.isArray(store.social)
       ? Object.entries(store.social).map(([network, value]) => ({ 
           network, 
           url: typeof value === 'string' ? value : String(value)
@@ -369,11 +387,33 @@ export default function MyStorePage() {
   }
 
   const handleSaveHandle = async (newHandle: string) => {
-    await handleUpdate({ handle: newHandle })
-    toast({
-      title: 'Success',
-      description: 'Username updated',
-    })
+    try {
+      const response = await fetch('/api/settings/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: newHandle }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to update username')
+      }
+
+      // Refresh store data
+      await fetchStore()
+      
+      toast({
+        title: 'Success',
+        description: 'Username updated',
+      })
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to update username',
+      })
+      throw error
+    }
   }
 
   const handleSaveBio = async (newBio: string) => {
@@ -1168,7 +1208,7 @@ export default function MyStorePage() {
               <div className="h-full overflow-y-auto">
                 <EditSidebar 
                   store={store} 
-                  onUpdate={handleUpdate}
+                  onUpdate={handleUpdateForSidebar}
                   onPreviewUpdate={handlePreviewUpdate}
                   initialView={sidebarView}
                   initialCustomLinkView={customLinkView}

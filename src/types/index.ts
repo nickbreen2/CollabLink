@@ -1,6 +1,6 @@
-import { CreatorStore, Theme, AccountStatus, CollabRequest, CollabRequestStatus } from '@prisma/client'
+import { CreatorStore, Theme, AccountStatus, CollabRequest, CollabStatus } from '@prisma/client'
 
-export type { CreatorStore, Theme, AccountStatus, CollabRequest, CollabRequestStatus }
+export type { CreatorStore, Theme, AccountStatus, CollabRequest, CollabStatus }
 
 export interface SocialLink {
   network: string

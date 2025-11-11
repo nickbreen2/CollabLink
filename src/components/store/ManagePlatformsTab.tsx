@@ -18,7 +18,7 @@ interface SocialLink {
 
 interface ManagePlatformsTabProps {
   store: CreatorStore
-  onUpdate: (data: Partial<CreatorStore>) => void
+  onUpdate: (data: Partial<CreatorStore>) => void | Promise<void>
   onBack: () => void
   initialView?: 'add' | 'edit'
   editingPlatformNetwork?: string
