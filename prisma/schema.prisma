@@ -22,25 +22,45 @@ model User {
 }
 
 model CreatorStore {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  handle          String   @unique
+  id              String          @id @default(cuid())
+  userId          String          @unique
+  handle          String          @unique
   displayName     String?
   location        String?
   bio             String?
   avatarUrl       String?
   bannerUrl       String?
-  theme           Theme    @default(DARK)
+  theme           Theme           @default(DARK)
   categories      String[]
   social          Json?
-  isPublished     Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  showSocialLinks Boolean  @default(true)
+  isPublished     Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  showSocialLinks Boolean         @default(true)
   customLinks     Json?
   highlights      Json?
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   collabRequests  CollabRequest[]
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CollabRequest {
+  id          String       @id @default(cuid())
+  creatorId   String
+  senderName  String
+  brandName   String?
+  senderEmail String
+  budget      Float?
+  description String?
+  links       String[]
+  status      CollabStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  pinned      Boolean      @default(false)
+  emailDomain String?
+  creator     CreatorStore @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId])
+  @@index([creatorId, pinned])
 }
 
 enum Role {
@@ -58,26 +78,6 @@ enum AccountStatus {
   PAUSED
   PENDING_DELETION
   DELETED
-}
-
-model CollabRequest {
-  id          String       @id @default(cuid())
-  creatorId   String
-  senderName  String
-  brandName   String?
-  senderEmail String
-  emailDomain String?      // NEW: Normalized email domain (e.g., "nike.com")
-  budget      Float?
-  description String?
-  links       String[]
-  status      CollabStatus @default(PENDING)
-  pinned      Boolean      @default(false)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  creator     CreatorStore @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-
-  @@index([creatorId])
-  @@index([creatorId, pinned])
 }
 
 enum CollabStatus {
