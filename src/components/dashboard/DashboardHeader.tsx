@@ -24,7 +24,7 @@ export default function DashboardHeader({
   badge,
 }: DashboardHeaderProps) {
   return (
-    <div className={cn("sticky top-0 z-50 bg-gray-50 dark:bg-gray-900 border-b", className)}>
+    <div className={cn("sticky top-0 z-[100] bg-gray-50 dark:bg-gray-900 border-b", className)}>
       <div className="mx-auto w-full max-w-[1180px] px-4 py-3">
         <div className="flex items-start gap-3">
           <div className="min-w-0 flex-1">

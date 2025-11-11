@@ -165,12 +165,9 @@ export default function AddHighlightPage({ onBack, onSave, theme }: AddHighlight
           )}
 
           {/* Info */}
-          <div className={`
-            p-4 rounded-lg text-sm
-            ${theme === 'LIGHT' ? 'bg-blue-50' : 'bg-blue-950/30'}
-          `}>
-            <p className="font-medium mb-1 text-black dark:text-white">Supported platforms:</p>
-            <ul className="list-disc list-inside space-y-0.5 text-xs text-black dark:text-white">
+          <div className="p-4 rounded-lg text-sm bg-[#ebecf3]">
+            <p className="font-medium mb-1 text-black">Supported platforms:</p>
+            <ul className="list-disc list-inside space-y-0.5 text-xs text-black">
               <li>YouTube</li>
               <li>TikTok</li>
               <li>Instagram (Posts & Reels)</li>
@@ -193,6 +190,7 @@ export default function AddHighlightPage({ onBack, onSave, theme }: AddHighlight
           </Button>
           <Button
             onClick={handleSave}
+            variant="gradient"
             className="flex-1"
             disabled={isSaving || !videoUrl.trim() || !isValid}
           >

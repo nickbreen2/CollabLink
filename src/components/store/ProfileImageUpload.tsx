@@ -149,7 +149,7 @@ export default function ProfileImageUpload({
         onMouseLeave={() => showHoverOverlay && setIsHovered(false)}
         onClick={handleClick}
       >
-        <Avatar className={`${className} border-4 border-white dark:border-black shadow-xl transition-all duration-200 ${isHovered && showHoverOverlay ? 'ring-2 ring-[#D4D7DC]' : ''}`}>
+        <Avatar className={`${className} border-4 border-white/45 dark:border-black/45 shadow-xl transition-all duration-200 ${isHovered && showHoverOverlay ? 'ring-2 ring-[#D4D7DC]' : ''}`}>
           <AvatarImage src={avatarUrl || undefined} />
           <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-purple-500 to-pink-500 text-white">
             {initials}

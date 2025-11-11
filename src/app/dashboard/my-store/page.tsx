@@ -193,7 +193,15 @@ export default function MyStorePage() {
     }
   }
   
-  const social = (store.social as any[]) || []
+  // Convert social to array format - handle both array and object formats
+  const social = Array.isArray(store.social) 
+    ? store.social 
+    : store.social && typeof store.social === 'object'
+    ? Object.entries(store.social).map(([network, value]) => ({ 
+        network, 
+        url: typeof value === 'string' ? value : String(value)
+      }))
+    : []
   const customLinks = (store.customLinks as CustomLink[]) || []
   const highlights = (store.highlights as Highlight[]) || []
   
@@ -321,7 +329,15 @@ export default function MyStorePage() {
   const handleAddLink = async (url: string) => {
     if (!selectedPlatform || !store) return
 
-    const social = (store.social as any[]) || []
+    // Convert social to array format - handle both array and object formats
+    const social = Array.isArray(store.social) 
+      ? store.social 
+      : store.social && typeof store.social === 'object'
+      ? Object.entries(store.social).map(([network, value]) => ({ 
+          network, 
+          url: typeof value === 'string' ? value : String(value)
+        }))
+      : []
     const newLinks = [...social]
     const existingIndex = newLinks.findIndex((l) => l.network === selectedPlatform.id)
 
@@ -387,6 +403,30 @@ export default function MyStorePage() {
 
       {/* SCROLLABLE CONTENT AREA */}
       <div className="flex-1 overflow-hidden relative">
+        {/* Blurred background image - Preview mode only - Absolute to cover content area only */}
+        {!isEditing && store?.avatarUrl && (
+          <div 
+            className="absolute inset-0 overflow-hidden pointer-events-none"
+            style={{
+              zIndex: 0,
+            }}
+          >
+            <img
+              src={store.avatarUrl}
+              alt=""
+              className="w-full h-full object-cover"
+              style={{
+                filter: 'blur(40px)',
+                transform: 'scale(1.1)',
+                opacity: 0.25,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center',
+              }}
+            />
+          </div>
+        )}
         <div className="h-full relative">
           {/* PREVIEW COLUMN - SCROLLABLE - Centered with sidebar offset in Edit */}
           <div 
@@ -395,24 +435,8 @@ export default function MyStorePage() {
               transition-[margin-right] duration-300 ease-in-out
               ${isEditing ? 'mr-[420px]' : ''}
             `}
-            style={{ overscrollBehaviorX: 'none' }}
+            style={{ overscrollBehaviorX: 'none', zIndex: 1 }}
           >
-            {/* Blurred background image - Preview mode only */}
-            {!isEditing && store?.avatarUrl && (
-              <div 
-                className="absolute inset-0 overflow-hidden pointer-events-none"
-                style={{
-                  backgroundImage: `url(${store.avatarUrl})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat',
-                  filter: 'blur(40px)',
-                  transform: 'scale(1.1)',
-                  opacity: 0.25,
-                  zIndex: 0,
-                }}
-              />
-            )}
             {/* Container for card + sticky button */}
             <div className="relative w-full max-w-[540px] mx-auto" style={{ zIndex: 10 }}>
               {/* PREVIEW CARD — CENTERED */}
@@ -1088,16 +1112,18 @@ export default function MyStorePage() {
                       ) : (
                         // Preview mode - Direct display
                         <div className="space-y-4">
-                          <div className="grid grid-cols-2 gap-3">
-                            {highlights.map((highlight) => (
-                              <div key={highlight.id} className="rounded-xl overflow-hidden">
-                                <VideoEmbed 
-                                  url={highlight.videoUrl} 
-                                  title={highlight.title} 
-                                  theme={store.theme} 
-                                />
-                              </div>
-                            ))}
+                          <div className="w-full max-w-md">
+                            <div className="grid grid-cols-2 gap-3">
+                              {highlights.map((highlight) => (
+                                <div key={highlight.id} className="rounded-xl overflow-hidden">
+                                  <VideoEmbed 
+                                    url={highlight.videoUrl} 
+                                    title={highlight.title} 
+                                    theme={store.theme} 
+                                  />
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       )}

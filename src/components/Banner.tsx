@@ -22,7 +22,7 @@ export default function Banner({ src, avatarUrl, initials, theme }: BannerProps)
           src={imageSrc}
           alt="Profile banner"
           fill
-          className="object-cover"
+          className="object-cover border-0"
           style={{
             objectPosition: 'center 30%', // Move image down - shows more of the top
             transform: 'scale(1.3)', // Make image 30% bigger
@@ -33,7 +33,7 @@ export default function Banner({ src, avatarUrl, initials, theme }: BannerProps)
       ) : initials ? (
         // Fallback to initials if no image
         <div className="absolute inset-0 flex items-center justify-center">
-          <Avatar className="h-48 w-48 border-4 border-white/20">
+          <Avatar className={`h-48 w-48 border-4 ${theme === 'LIGHT' ? 'border-white/45' : 'border-black/45'}`}>
             <AvatarFallback className="text-6xl font-bold bg-gradient-to-br from-purple-500 to-pink-500 text-white">
               {initials}
             </AvatarFallback>

@@ -1,4 +1,4 @@
-/**
+2/**
  * List of common generic email provider domains
  * These should skip Brandfetch lookup and use monogram instead
  */

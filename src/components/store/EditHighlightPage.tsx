@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Video as VideoIcon, X as XIcon, Trash2 } from 'lucide-react'
+import { Video as VideoIcon, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -29,8 +29,7 @@ interface EditHighlightPageProps {
 
 export default function EditHighlightPage({ highlight, onBack, onSave, onDelete, theme }: EditHighlightPageProps) {
   const [videoUrl, setVideoUrl] = useState(highlight.videoUrl)
-  const [title, setTitle] = useState(highlight.title || '')
-  const [errors, setErrors] = useState({ videoUrl: '', title: '' })
+  const [errors, setErrors] = useState({ videoUrl: '' })
   const [isSaving, setIsSaving] = useState(false)
   const [showPreview, setShowPreview] = useState(true)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
@@ -75,7 +74,7 @@ export default function EditHighlightPage({ highlight, onBack, onSave, onDelete,
 
   const handleSave = async () => {
     // Validate
-    const newErrors = { videoUrl: '', title: '' }
+    const newErrors = { videoUrl: '' }
     
     if (!videoUrl.trim()) {
       newErrors.videoUrl = 'Video URL is required'
@@ -84,11 +83,7 @@ export default function EditHighlightPage({ highlight, onBack, onSave, onDelete,
       newErrors.videoUrl = hint || 'Please enter a valid YouTube, TikTok, Instagram, or Vimeo video URL'
     }
     
-    if (title.trim() && title.length > 100) {
-      newErrors.title = 'Title must be 100 characters or less'
-    }
-    
-    if (newErrors.videoUrl || newErrors.title) {
+    if (newErrors.videoUrl) {
       setErrors(newErrors)
       return
     }
@@ -99,7 +94,6 @@ export default function EditHighlightPage({ highlight, onBack, onSave, onDelete,
       const updatedHighlight: Highlight = {
         ...highlight,
         videoUrl,
-        title: title.trim() || undefined,
       }
       await onSave(updatedHighlight)
     } catch (error) {
@@ -123,21 +117,26 @@ export default function EditHighlightPage({ highlight, onBack, onSave, onDelete,
 
   return (
     <>
-      <div className="px-6 py-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onBack}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-            aria-label="Go back"
-          >
-            <XIcon className="h-5 w-5" />
-          </button>
-          <h3 className="text-lg font-semibold">Edit Highlight</h3>
+      <div className="h-full flex flex-col">
+        {/* Header with Close Button */}
+        <div className="flex-shrink-0 bg-white dark:bg-gray-950 px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-semibold">Edit Highlight</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBack}
+              className="h-8 px-3 text-red-600 hover:bg-[#fff2f1] hover:text-red-600"
+              disabled={isSaving}
+            >
+              Close
+            </Button>
+          </div>
         </div>
 
-        {/* Form */}
-        <div className="space-y-6">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto px-6 py-6 pb-44">
+          <div className="space-y-6">
           {/* Video URL Input */}
           <div className="space-y-2">
             <Label htmlFor="videoUrl" className="text-sm font-medium">
@@ -167,82 +166,59 @@ export default function EditHighlightPage({ highlight, onBack, onSave, onDelete,
             )}
           </div>
 
-          {/* Title Input (Optional) */}
-          <div className="space-y-2">
-            <Label htmlFor="title" className="text-sm font-medium">
-              Title (Optional)
-            </Label>
-            <Input
-              id="title"
-              type="text"
-              placeholder="My awesome video"
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value)
-                if (errors.title) setErrors({ ...errors, title: '' })
-              }}
-              maxLength={100}
-              className={errors.title ? 'border-red-500' : ''}
-            />
-            {errors.title && (
-              <p className="text-xs text-red-500">{errors.title}</p>
-            )}
-            <p className="text-xs text-gray-500">{title.length}/100</p>
-          </div>
-
           {/* Preview */}
           {showPreview && videoUrl && !errors.videoUrl && (
             <div className="space-y-2">
               <Label className="text-sm font-medium">Preview</Label>
-              <VideoEmbed url={videoUrl} title={title || undefined} theme={theme} />
+              <VideoEmbed url={videoUrl} title={undefined} theme={theme} />
             </div>
           )}
 
           {/* Info */}
-          <div className={`
-            p-4 rounded-lg text-sm
-            ${theme === 'LIGHT' ? 'bg-blue-50 text-blue-900' : 'bg-blue-950/30 text-blue-300'}
-          `}>
-            <p className="font-medium mb-1">Supported platforms:</p>
-            <ul className="list-disc list-inside space-y-0.5 text-xs">
+          <div className="p-4 rounded-lg text-sm bg-[#ebecf3]">
+            <p className="font-medium mb-1 text-black">Supported platforms:</p>
+            <ul className="list-disc list-inside space-y-0.5 text-xs text-black">
               <li>YouTube</li>
               <li>TikTok</li>
               <li>Instagram (Posts & Reels)</li>
               <li>Vimeo</li>
             </ul>
           </div>
+          </div>
         </div>
 
-        {/* Actions */}
-        <div className="space-y-3 pt-4">
-          <div className="flex gap-3">
+        {/* Fixed Footer with Actions */}
+        <div className="flex-shrink-0 bg-white dark:bg-gray-950 px-6 py-4 border-t border-gray-200 dark:border-gray-800">
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={onBack}
+                className="flex-1"
+                disabled={isSaving}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                className="flex-1"
+                disabled={isSaving || !videoUrl.trim()}
+              >
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
+            
+            {/* Delete Button */}
             <Button
-              variant="outline"
-              onClick={onBack}
-              className="flex-1"
+              variant="destructive"
+              onClick={handleDelete}
+              className="w-full"
               disabled={isSaving}
             >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSave}
-              className="flex-1"
-              disabled={isSaving || !videoUrl.trim()}
-            >
-              {isSaving ? 'Saving...' : 'Save Changes'}
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Highlight
             </Button>
           </div>
-          
-          {/* Delete Button */}
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            className="w-full"
-            disabled={isSaving}
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete Highlight
-          </Button>
         </div>
       </div>
 

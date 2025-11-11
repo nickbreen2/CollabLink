@@ -83,7 +83,15 @@ export default function PublicStorePage() {
     return null
   }
 
-  const social = (store.social as any[]) || []
+  // Convert social to array format - handle both array and object formats
+  const social = Array.isArray(store.social) 
+    ? store.social 
+    : store.social && typeof store.social === 'object'
+    ? Object.entries(store.social).map(([network, value]) => ({ 
+        network, 
+        url: typeof value === 'string' ? value : String(value)
+      }))
+    : []
   const customLinks = (store.customLinks as CustomLink[]) || []
   const highlights = (store.highlights as Highlight[]) || []
   
@@ -101,16 +109,24 @@ export default function PublicStorePage() {
           <div 
             className="fixed inset-0 overflow-hidden pointer-events-none"
             style={{
-              backgroundImage: `url(${store.avatarUrl})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              filter: 'blur(40px)',
-              transform: 'scale(1.1)',
-              opacity: 0.25,
               zIndex: 0,
             }}
-          />
+          >
+            <img
+              src={store.avatarUrl}
+              alt=""
+              className="w-full h-full object-cover"
+              style={{
+                filter: 'blur(40px)',
+                transform: 'scale(1.1)',
+                opacity: 0.25,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center',
+              }}
+            />
+          </div>
           {/* Gradient overlay to fade blurred background to white at bottom */}
           <div 
             className="fixed inset-0 pointer-events-none"
