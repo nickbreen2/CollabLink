@@ -22,6 +22,7 @@ export default async function DashboardLayout({
       store: {
         select: {
           id: true,
+          handle: true,
           displayName: true,
           avatarUrl: true,
         },
@@ -36,6 +37,8 @@ export default async function DashboardLayout({
         avatarUrl: user.store?.avatarUrl,
       }
     : { email: session.email }
+  
+  const handle = user?.store?.handle || null
 
   // Fetch pending collab requests count and newest timestamp
   let pendingCount = 0
@@ -77,12 +80,15 @@ export default async function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
       <ConditionalNav 
-        user={userData} 
+        user={userData}
+        handle={handle}
         pendingCollabCount={pendingCount}
         totalCollabCount={totalCollabCount}
         newestPendingTimestamp={newestPendingTimestamp}
       />
-      <main className="flex-1 overflow-hidden">{children}</main>
+      <main className="flex-1 overflow-y-auto overflow-x-hidden w-full min-w-0 lg:ml-0 pb-16 lg:pb-0">
+        {children}
+      </main>
     </div>
   )
 }

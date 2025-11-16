@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Trash2, Link as LinkIcon, Image as ImageIcon, X as XIcon } from 'lucide-react'
+import { Trash2, Link as LinkIcon, X as XIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -34,7 +34,6 @@ export default function EditCustomLinkPage({ link, onBack, onSave, onDelete, the
   const [errors, setErrors] = useState({ title: '', url: '' })
   const [isSaving, setIsSaving] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [showThumbnailSelector, setShowThumbnailSelector] = useState(false)
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false)
   const [isUploadingIcon, setIsUploadingIcon] = useState(false)
   const [isHoveringPreview, setIsHoveringPreview] = useState(false)
@@ -398,6 +397,160 @@ export default function EditCustomLinkPage({ link, onBack, onSave, onDelete, the
               )}
             </div>
 
+            {/* Thumbnail Size Options - Directly below preview */}
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground text-center">Find the look that fits you best</p>
+              <div className="flex gap-3">
+                {/* Big Thumbnail Option */}
+                <button
+                  onClick={() => {
+                    setThumbnailSize('big')
+                  }}
+                  className={`
+                    flex-1 p-3 rounded-xl border-2 transition-all
+                    ${thumbnailSize === 'big' 
+                      ? 'border-pink-500 bg-gradient-to-br from-pink-50 to-orange-50 dark:from-pink-950 dark:to-orange-950' 
+                      : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 bg-gray-50 dark:bg-gray-900'
+                    }
+                  `}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    {/* Mini preview - Big thumbnail layout */}
+                    <div className={`
+                      w-full aspect-[13/8] rounded-lg overflow-hidden relative
+                      ${thumbnailSize === 'big' 
+                        ? 'bg-gray-800 dark:bg-gray-900' 
+                        : 'bg-gray-800 dark:bg-gray-900'
+                      }
+                    `}>
+                      {/* Subtle image pattern overlay */}
+                      <div className="absolute inset-0 opacity-10">
+                        <div className="w-full h-full" style={{
+                          backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 6px)'
+                        }} />
+                      </div>
+                      {/* Icon at top-left */}
+                      <div className="absolute top-1 left-1 z-10">
+                        <div className={`
+                          w-2.5 h-2.5 rounded-lg
+                          ${thumbnailSize === 'big' ? 'bg-blue-500' : 'bg-gray-500'}
+                        `} />
+                      </div>
+                      {/* Title at bottom-center */}
+                      <div className="absolute bottom-0 left-0 right-0 p-1">
+                        <div className="text-center">
+                          <div className={`
+                            h-1 rounded mx-auto
+                            ${thumbnailSize === 'big' ? 'bg-white w-10' : 'bg-gray-400 w-8'}
+                          `} />
+                        </div>
+                      </div>
+                    </div>
+                    <span className={`
+                      text-xs font-medium
+                      ${thumbnailSize === 'big' ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-400'}
+                    `}>
+                      Big
+                    </span>
+                  </div>
+                </button>
+
+                {/* Small Thumbnail Option */}
+                <button
+                  onClick={() => {
+                    setThumbnailSize('small')
+                  }}
+                  className={`
+                    flex-1 p-3 rounded-xl border-2 transition-all
+                    ${thumbnailSize === 'small' 
+                      ? 'border-pink-500 bg-gradient-to-br from-pink-50 to-orange-50 dark:from-pink-950 dark:to-orange-950' 
+                      : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 bg-gray-50 dark:bg-gray-900'
+                    }
+                  `}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    {/* Mini preview - Small thumbnail layout */}
+                    <div className={`
+                      w-full aspect-[2/1] rounded-lg overflow-hidden relative
+                      ${thumbnailSize === 'small' 
+                        ? 'bg-gray-800 dark:bg-gray-900' 
+                        : 'bg-gray-800 dark:bg-gray-900'
+                      }
+                    `}>
+                      {/* Subtle image pattern overlay */}
+                      <div className="absolute inset-0 opacity-10">
+                        <div className="w-full h-full" style={{
+                          backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.1) 4px, rgba(255,255,255,0.1) 8px)'
+                        }} />
+                      </div>
+                      {/* Icon at top-left */}
+                      <div className="absolute top-1.5 left-1.5 z-10">
+                        <div className={`
+                          w-3 h-3 rounded-lg
+                          ${thumbnailSize === 'small' ? 'bg-blue-500' : 'bg-gray-500'}
+                        `} />
+                      </div>
+                      {/* Title at bottom-center */}
+                      <div className="absolute bottom-0 left-0 right-0 p-1.5">
+                        <div className="text-center">
+                          <div className={`
+                            h-1 w-10 rounded mx-auto
+                            ${thumbnailSize === 'small' ? 'bg-white' : 'bg-gray-400'}
+                          `} />
+                        </div>
+                      </div>
+                    </div>
+                    <span className={`
+                      text-xs font-medium
+                      ${thumbnailSize === 'small' ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-400'}
+                    `}>
+                      Small
+                    </span>
+                  </div>
+                </button>
+
+                {/* No Thumbnail Option */}
+                <button
+                  onClick={() => setThumbnailSize('none')}
+                  className={`
+                    flex-1 p-3 rounded-xl border-2 transition-all
+                    ${thumbnailSize === 'none' 
+                      ? 'border-pink-500 bg-gradient-to-br from-pink-50 to-orange-50 dark:from-pink-950 dark:to-orange-950' 
+                      : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 bg-gray-50 dark:bg-gray-900'
+                    }
+                  `}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    {/* Mini preview - No thumbnail (horizontal bar layout) */}
+                    <div className={`
+                      w-full h-12 rounded-lg flex items-center gap-2 px-2
+                      ${thumbnailSize === 'none' 
+                        ? 'bg-gray-100 dark:bg-gray-800' 
+                        : 'bg-gray-100 dark:bg-gray-800'
+                      }
+                    `}>
+                      {/* Icon on left */}
+                      <div className={`
+                        w-3 h-3 rounded-lg flex-shrink-0
+                        ${thumbnailSize === 'none' ? 'bg-blue-500' : 'bg-gray-400'}
+                      `} />
+                      {/* Title on right */}
+                      <div className={`
+                        flex-1 h-1 rounded
+                        ${thumbnailSize === 'none' ? 'bg-gray-700 dark:bg-gray-300' : 'bg-gray-400 dark:bg-gray-600'}
+                      `} />
+                    </div>
+                    <span className={`
+                      text-xs font-medium
+                      ${thumbnailSize === 'none' ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-400'}
+                    `}>
+                      None
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </div>
+
             {/* Upload Thumbnail Button */}
             <button
               onClick={() => thumbnailInputRef.current?.click()}
@@ -428,6 +581,13 @@ export default function EditCustomLinkPage({ link, onBack, onSave, onDelete, the
               type="file"
               accept="image/jpeg,image/jpg,image/png,image/webp,image/svg+xml"
               onChange={handleThumbnailUpload}
+              className="hidden"
+            />
+            <input
+              ref={iconInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp,image/svg+xml"
+              onChange={handleIconUpload}
               className="hidden"
             />
           </div>
@@ -478,6 +638,34 @@ export default function EditCustomLinkPage({ link, onBack, onSave, onDelete, the
             )}
           </div>
 
+          {/* Upload Link Icon Button */}
+          <div className="space-y-2">
+            <Label className="text-sm">
+              Change link Icon
+            </Label>
+            <Button
+              onClick={() => iconInputRef.current?.click()}
+              disabled={isUploadingIcon}
+              variant="outline"
+              size="sm"
+              className="w-full gap-1.5 text-xs h-9"
+            >
+              <LinkIcon className="h-3.5 w-3.5" />
+              {isUploadingIcon ? 'Uploading...' : 'Upload link icon'}
+            </Button>
+
+            {/* Reset Icon Button (if custom icon is uploaded) */}
+            {customIconUrl && (
+              <button
+                onClick={() => setCustomIconUrl(undefined)}
+                className="flex items-center gap-2 text-sm text-red-500 hover:text-red-600 transition-colors w-full justify-center"
+              >
+                <XIcon className="h-4 w-4" />
+                Reset to platform icon
+              </button>
+            )}
+          </div>
+
           {/* Delete Section */}
           <div className="pt-6 border-t border-gray-200 dark:border-gray-800">
             <Button
@@ -492,54 +680,9 @@ export default function EditCustomLinkPage({ link, onBack, onSave, onDelete, the
         </div>
       </div>
 
-      {/* Fixed Footer with Actions and Save Button */}
+      {/* Fixed Footer with Save Button */}
       <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
-        <div className="px-6 py-4 space-y-3">
-          {/* Action Buttons - Side by Side */}
-          <div className="flex gap-2">
-            {/* Resize Thumbnail Button */}
-            <Button
-              onClick={() => setShowThumbnailSelector(true)}
-              variant="outline"
-              size="sm"
-              className="flex-1 gap-1.5 text-xs h-9"
-            >
-              <ImageIcon className="h-3.5 w-3.5" />
-              Resize thumbnail
-            </Button>
-
-            {/* Upload Link Icon Button */}
-            <Button
-              onClick={() => iconInputRef.current?.click()}
-              disabled={isUploadingIcon}
-              variant="outline"
-              size="sm"
-              className="flex-1 gap-1.5 text-xs h-9"
-            >
-              <LinkIcon className="h-3.5 w-3.5" />
-              {isUploadingIcon ? 'Uploading...' : 'Upload link icon'}
-            </Button>
-            <input
-              ref={iconInputRef}
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/webp,image/svg+xml"
-              onChange={handleIconUpload}
-              className="hidden"
-            />
-          </div>
-
-          {/* Reset Icon Button (if custom icon is uploaded) */}
-          {customIconUrl && (
-            <button
-              onClick={() => setCustomIconUrl(undefined)}
-              className="flex items-center gap-2 text-sm text-red-500 hover:text-red-600 transition-colors w-full justify-center"
-            >
-              <XIcon className="h-4 w-4" />
-              Reset to platform icon
-            </button>
-          )}
-
-          {/* Save Button */}
+        <div className="px-6 py-4">
           <Button
             onClick={handleSave}
             disabled={isSaving}
@@ -576,113 +719,6 @@ export default function EditCustomLinkPage({ link, onBack, onSave, onDelete, the
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Thumbnail Size Selector Bottom Sheet */}
-      {showThumbnailSelector && (
-        <>
-          {/* Backdrop - dims only canvas/left side, not the sidebar */}
-          <div
-            className="fixed inset-y-0 left-0 right-[380px] bg-black/50 z-30 animate-in fade-in duration-200"
-            onClick={() => setShowThumbnailSelector(false)}
-          />
-          
-          {/* Bottom Sheet - attached to sidebar, same width */}
-          <div className="fixed right-0 bottom-0 w-[380px] z-50 animate-in slide-in-from-bottom duration-300">
-            <div className="bg-white dark:bg-gray-950 rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.3)] border-t border-l border-gray-200 dark:border-gray-700 max-h-[60vh] overflow-y-auto">
-              {/* Handle bar */}
-              <div className="flex justify-center pt-3 pb-2">
-                <div className="w-12 h-1 bg-gray-300 dark:bg-gray-700 rounded-full" />
-              </div>
-              
-              {/* Content */}
-              <div className="px-6 pb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold">Resize Thumbnail</h3>
-                  <button
-                    onClick={() => setShowThumbnailSelector(false)}
-                    className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                    aria-label="Close"
-                  >
-                    <XIcon className="h-5 w-5" />
-                  </button>
-                </div>
-                <p className="text-sm text-muted-foreground mb-6">Choose a thumbnail size for your featured link</p>
-                
-                <div className="space-y-3">
-                  {/* Big Thumbnail Option */}
-                  <button
-                    onClick={() => {
-                      setThumbnailSize('big')
-                      setShowThumbnailSelector(false)
-                    }}
-                    className={`
-                      w-full p-4 rounded-xl border-2 transition-all
-                      ${thumbnailSize === 'big' 
-                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-950' 
-                        : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
-                      }
-                    `}
-                  >
-                    <div className="flex items-center gap-3">
-                      <ImageIcon className="h-8 w-8" />
-                      <div className="flex-1 text-left">
-                        <p className="font-semibold">Big Thumbnail</p>
-                        <p className="text-xs text-muted-foreground">538×262 (desktop) / 398×241 (mobile)</p>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* Small Thumbnail Option */}
-                  <button
-                    onClick={() => {
-                      setThumbnailSize('small')
-                      setShowThumbnailSelector(false)
-                    }}
-                    className={`
-                      w-full p-4 rounded-xl border-2 transition-all
-                      ${thumbnailSize === 'small' 
-                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-950' 
-                        : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
-                      }
-                    `}
-                  >
-                    <div className="flex items-center gap-3">
-                      <ImageIcon className="h-6 w-6" />
-                      <div className="flex-1 text-left">
-                        <p className="font-semibold">Small Thumbnail</p>
-                        <p className="text-xs text-muted-foreground">262×161 (desktop) / 193×122 (mobile)</p>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* No Thumbnail Option */}
-                  <button
-                    onClick={() => {
-                      setThumbnailSize('none')
-                      setShowThumbnailSelector(false)
-                    }}
-                    className={`
-                      w-full p-4 rounded-xl border-2 transition-all
-                      ${thumbnailSize === 'none' 
-                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-950' 
-                        : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
-                      }
-                    `}
-                  >
-                    <div className="flex items-center gap-3">
-                      <LinkIcon className="h-5 w-5" />
-                      <div className="flex-1 text-left">
-                        <p className="font-semibold">No Thumbnail</p>
-                        <p className="text-xs text-muted-foreground">Default link size</p>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
     </div>
   )
 }

@@ -90,10 +90,19 @@ function ActivityChart({ data }: { data: { time: string; value: number }[] }) {
       
       
       {/* Time labels */}
-      <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-muted-foreground px-2 pointer-events-none">
-        {data.filter((_, i) => i % Math.floor(data.length / 6) === 0).map((d, i) => (
-          <span key={i}>{d.time}</span>
-        ))}
+      <div className="absolute bottom-0 left-0 right-0 pb-1 pointer-events-none">
+        {/* Mobile: Show 3 labels */}
+        <div className="flex justify-between text-[10px] text-muted-foreground px-1 sm:hidden">
+          {data.filter((_, i) => i % Math.floor(data.length / 3) === 0).map((d, i) => (
+            <span key={i} className="truncate">{d.time}</span>
+          ))}
+        </div>
+        {/* Desktop: Show 6 labels */}
+        <div className="hidden sm:flex justify-between text-xs text-muted-foreground px-2">
+          {data.filter((_, i) => i % Math.floor(data.length / 6) === 0).map((d, i) => (
+            <span key={i}>{d.time}</span>
+          ))}
+        </div>
       </div>
       
       {/* Tooltip */}

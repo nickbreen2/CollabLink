@@ -69,18 +69,9 @@ export default function DashboardNav({ user, pendingCollabCount = 0, totalCollab
   const displayName = user?.displayName || user?.email?.split('@')[0] || 'User'
   const avatarFallback = displayName.substring(0, 2).toUpperCase()
 
-  return (
-    <aside className="w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 flex flex-col h-screen sticky top-0">
-      <div className="p-6 flex-shrink-0">
-        <Image 
-          src="/icons/collablink.svg" 
-          alt="CollabLink" 
-          width={200} 
-          height={60}
-          className="w-auto h-12"
-        />
-      </div>
-
+  // Navigation content component to avoid duplication
+  const NavContent = ({ onLinkClick }: { onLinkClick?: () => void }) => (
+    <>
       <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
         <h2 className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           Main
@@ -93,6 +84,7 @@ export default function DashboardNav({ user, pendingCollabCount = 0, totalCollab
             <Link
               key={item.href}
               href={item.href}
+              onClick={onLinkClick}
               className={cn(
                 'flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors relative',
                 isActive
@@ -172,7 +164,26 @@ export default function DashboardNav({ user, pendingCollabCount = 0, totalCollab
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </aside>
+    </>
+  )
+
+  return (
+    <>
+      {/* Desktop Sidebar - Hidden on mobile */}
+      <aside className="hidden lg:flex w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 flex-col h-screen sticky top-0">
+        <div className="p-6 flex-shrink-0">
+          <Image 
+            src="/icons/collablink.svg" 
+            alt="CollabLink" 
+            width={200} 
+            height={60}
+            className="w-auto h-12"
+          />
+        </div>
+
+        <NavContent />
+      </aside>
+    </>
   )
 }
 

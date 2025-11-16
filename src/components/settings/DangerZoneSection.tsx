@@ -298,7 +298,7 @@ export default function DangerZoneSection({ user: initialUser }: DangerZoneSecti
 
       {/* Pause Account Dialog */}
       <Dialog open={pauseDialogOpen} onOpenChange={setPauseDialogOpen}>
-        <DialogContent>
+        <DialogContent className="overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Pause Account</DialogTitle>
             <DialogDescription>
@@ -321,7 +321,7 @@ export default function DangerZoneSection({ user: initialUser }: DangerZoneSecti
 
       {/* Delete Account Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
+        <DialogContent className="overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Delete Account</DialogTitle>
             <DialogDescription>

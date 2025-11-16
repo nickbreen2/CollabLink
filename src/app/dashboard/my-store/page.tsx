@@ -13,7 +13,7 @@ import CategoriesEditModal from '@/components/store/CategoriesEditModal'
 import SocialIconsDisplay from '@/components/store/SocialIconsDisplay'
 import { toast } from '@/components/ui/use-toast'
 import { CreatorStore } from '@prisma/client'
-import { Eye, Pencil, Plus, MoreVertical, MoveUp, MoveDown, Trash2, ChevronRight } from 'lucide-react'
+import { Eye, Pencil, Plus, MoreVertical, MoveUp, MoveDown, Trash2, ChevronRight, X } from 'lucide-react'
 import { getPlatformIcon } from '@/components/icons/PlatformIcons'
 import { getPlatformById, Platform } from '@/lib/platformCategories'
 import LinkManagerModal from '@/components/store/LinkManagerModal'
@@ -95,9 +95,20 @@ export default function MyStorePage() {
   const [editingCustomLinkId, setEditingCustomLinkId] = useState<string | undefined>(undefined)
   const [platformView, setPlatformView] = useState<'add' | 'edit' | undefined>(undefined)
   const [editingPlatformNetwork, setEditingPlatformNetwork] = useState<string | undefined>(undefined)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     fetchStore()
+  }, [])
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
   const fetchStore = async () => {
@@ -209,6 +220,25 @@ export default function MyStorePage() {
       setPlatformView(undefined)
       setEditingPlatformNetwork(undefined)
     }
+  }
+
+  // Handle mobile navigation to edit views
+  const handleMobileEditNavigation = (view: 'platforms' | 'bio' | 'customLinks' | 'highlights' | 'header') => {
+    setSidebarView(view)
+    if (view === 'customLinks') {
+      setCustomLinkView('manager')
+    } else if (view === 'platforms') {
+      setPlatformView('add')
+    }
+  }
+
+  // Handle closing mobile edit view
+  const handleCloseMobileEditView = () => {
+    setSidebarView(undefined)
+    setCustomLinkView(undefined)
+    setEditingCustomLinkId(undefined)
+    setPlatformView(undefined)
+    setEditingPlatformNetwork(undefined)
   }
   
   // Convert social to array format - handle both array and object formats
@@ -471,21 +501,21 @@ export default function MyStorePage() {
           {/* PREVIEW COLUMN - SCROLLABLE - Centered with sidebar offset in Edit */}
           <div 
             className={`
-              relative flex justify-center items-start overflow-y-auto overflow-x-hidden scrollbar-hide h-full pt-8 pb-6 px-4
+              relative flex justify-center items-start overflow-y-auto overflow-x-hidden scrollbar-hide h-full pt-0 lg:pt-8 pb-6 px-0 lg:px-4
               transition-[margin-right] duration-300 ease-in-out
-              ${isEditing ? 'mr-[420px]' : ''}
+              ${isEditing ? 'lg:mr-[420px]' : ''}
             `}
             style={{ overscrollBehaviorX: 'none', zIndex: 1 }}
           >
             {/* Container for card + sticky button */}
-            <div className="relative w-full max-w-[540px] mx-auto" style={{ zIndex: 10 }}>
+            <div className="relative w-full max-w-[540px] lg:mx-auto" style={{ zIndex: 10 }}>
               {/* PREVIEW CARD — CENTERED */}
               <div
                 className={`
                   relative
                   w-full
-                  overflow-hidden rounded-3xl border
-                  ring-1 ring-black/10 dark:ring-white/10
+                  overflow-hidden rounded-none lg:rounded-3xl border-0 lg:border
+                  ring-0 lg:ring-1 ring-black/10 dark:ring-white/10
                   h-fit
                   transition-[box-shadow] duration-300 ease-in-out
                   ${store.theme === 'LIGHT' ? 'bg-white text-black' : 'bg-black text-white border-gray-800'}
@@ -583,7 +613,15 @@ export default function MyStorePage() {
                         ? 'cursor-pointer hover:underline decoration-2 underline-offset-4 decoration-[#D4D7DC] transition-all' 
                         : ''
                     }`}
-                    onClick={() => isEditing && setShowDisplayNameModal(true)}
+                    onClick={() => {
+                      if (isEditing) {
+                        if (isMobile) {
+                          handleMobileEditNavigation('header')
+                        } else {
+                          setShowDisplayNameModal(true)
+                        }
+                      }
+                    }}
                   >
                     {store.displayName || 'Your Name'}
                   </h2>
@@ -596,7 +634,15 @@ export default function MyStorePage() {
                           ? 'cursor-pointer hover:underline decoration-2 underline-offset-4 decoration-[#D4D7DC] transition-all' 
                           : ''
                       }`}
-                      onClick={() => isEditing && setShowHandleModal(true)}
+                      onClick={() => {
+                        if (isEditing) {
+                          if (isMobile) {
+                            handleMobileEditNavigation('header')
+                          } else {
+                            setShowHandleModal(true)
+                          }
+                        }
+                      }}
                     >
                       @{store.handle}
                     </p>
@@ -617,7 +663,14 @@ export default function MyStorePage() {
                       {/* QUICK ADD LINK BUTTON - Edit mode only */}
                       {isEditing && (
                         <button
-                          onClick={handleQuickAddLink}
+                          onClick={() => {
+                            if (isMobile) {
+                              setPlatformView('add')
+                              handleMobileEditNavigation('platforms')
+                            } else {
+                              handleQuickAddLink()
+                            }
+                          }}
                           aria-label="Add a new link"
                           title="Add a new link"
                           className="
@@ -645,7 +698,13 @@ export default function MyStorePage() {
                     // Edit mode - Card-style block with header
                     <div className="w-full max-w-md mb-6">
                       <button
-                        onClick={() => setShowBioModal(true)}
+                        onClick={() => {
+                          if (isMobile) {
+                            handleMobileEditNavigation('bio')
+                          } else {
+                            setShowBioModal(true)
+                          }
+                        }}
                         className={`
                           w-full rounded-xl
                           ${store.theme === 'LIGHT'
@@ -731,16 +790,38 @@ export default function MyStorePage() {
                           `}
                         >
                           {/* Header Row */}
-                          <div className="flex items-center justify-between px-5 py-3.5">
+                          <button
+                            onClick={() => {
+                              if (isMobile) {
+                                setCustomLinkView('manager')
+                                handleMobileEditNavigation('customLinks')
+                              }
+                            }}
+                            className={`w-full flex items-center justify-between px-5 py-3.5 ${isMobile ? 'cursor-pointer' : ''}`}
+                          >
                             <span className="font-bold text-sm">Links</span>
-                            <button
-                              onClick={handleQuickAddCustomLink}
-                              className="p-1 hover:opacity-80 transition-opacity"
-                              aria-label="Add new link"
-                            >
-                              <Plus className={`h-5 w-5 ${store.theme === 'LIGHT' ? 'text-gray-400' : 'text-gray-500'}`} />
-                            </button>
-                          </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  if (isMobile) {
+                                    setSidebarView('customLinks')
+                                    setCustomLinkView('add')
+                                    setEditingCustomLinkId(undefined)
+                                  } else {
+                                    handleQuickAddCustomLink()
+                                  }
+                                }}
+                                className="p-1 hover:opacity-80 transition-opacity"
+                                aria-label="Add new link"
+                              >
+                                <Plus className={`h-5 w-5 ${store.theme === 'LIGHT' ? 'text-gray-400' : 'text-gray-500'}`} />
+                              </button>
+                              {isMobile && !isEditing && (
+                                <ChevronRight className={`h-5 w-5 ${store.theme === 'LIGHT' ? 'text-gray-400' : 'text-gray-500'}`} />
+                              )}
+                            </div>
+                          </button>
                           
                           {/* Links Content */}
                           <div className="px-5 pb-5 pt-2">
@@ -760,9 +841,10 @@ export default function MyStorePage() {
                             return (
                               <div
                                 key={link.id}
+                                onClick={() => handleEditCustomLink(link.id)}
                                 className={`
                                   relative ${height} ${width} rounded-xl overflow-hidden
-                                  transition-all duration-200 group
+                                  transition-all duration-200 group cursor-pointer
                                 `}
                               >
                                 {/* Background Image */}
@@ -806,16 +888,13 @@ export default function MyStorePage() {
                                 </div>
                                 
                                 {/* Title at bottom-center */}
-                                <button
-                                  onClick={() => handleEditCustomLink(link.id)}
-                                  className="absolute bottom-0 left-0 right-0 p-4 hover:opacity-80 transition-opacity"
-                                >
+                                <div className="absolute bottom-0 left-0 right-0 p-4">
                                   <div className="text-center">
                                     <span className="text-white font-semibold text-lg drop-shadow-lg">
                                       {link.title}
                                     </span>
                                   </div>
-                                </button>
+                                </div>
                                 
                                 {/* Three-dot menu */}
                                 <div className="absolute top-2 right-2 z-20">
@@ -965,7 +1044,14 @@ export default function MyStorePage() {
 
                       {/* Add Link Card - Edit mode only */}
                         <button
-                          onClick={handleQuickAddCustomLink}
+                          onClick={() => {
+                            if (isMobile) {
+                              setCustomLinkView('add')
+                              handleMobileEditNavigation('customLinks')
+                            } else {
+                              handleQuickAddCustomLink()
+                            }
+                          }}
                           className={`
                             w-full px-6 py-8 rounded-xl border-2 border-dashed
                             transition-all duration-200
@@ -1104,9 +1190,17 @@ export default function MyStorePage() {
                     <div className="w-full max-w-md mt-6 relative" style={{ zIndex: 25 }}>
                       {isEditing ? (
                         // Edit mode - Card-style box
-                        <div
+                        <button
+                          onClick={() => {
+                            if (isMobile) {
+                              handleMobileEditNavigation('highlights')
+                            } else {
+                              setSidebarView('highlights')
+                              setMode('edit')
+                            }
+                          }}
                           className={`
-                            w-full rounded-xl
+                            w-full rounded-xl text-left
                             ${store.theme === 'LIGHT'
                               ? 'bg-[#F8FAFB] border border-gray-200'
                               : 'bg-gray-900 border border-gray-800'
@@ -1116,16 +1210,10 @@ export default function MyStorePage() {
                           {/* Header Row */}
                           <div className="flex items-center justify-between px-5 py-3.5">
                             <span className="font-bold text-sm">Highlights</span>
-                            <button
-                              onClick={() => {
-                                setSidebarView('highlights')
-                                setMode('edit')
-                              }}
-                              className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors flex items-center gap-1"
-                            >
+                            <div className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors flex items-center gap-1">
                               Manage
                               <ChevronRight className="h-3 w-3" />
-                            </button>
+                            </div>
                           </div>
                           
                           {/* Highlights Content */}
@@ -1148,7 +1236,7 @@ export default function MyStorePage() {
                               </div>
                             )}
                           </div>
-                        </div>
+                        </button>
                       ) : (
                         // Preview mode - Direct display
                         <div className="space-y-4">
@@ -1191,13 +1279,13 @@ export default function MyStorePage() {
           </div>
         </div>
 
-          {/* EDITOR SIDEBAR - Absolutely positioned on right, slides in/out */}
+          {/* EDITOR SIDEBAR - Show on desktop OR when mobile edit view is open */}
           <aside 
             className={`
-              absolute top-0 right-0 h-full w-[380px] z-40
+              absolute top-0 right-0 h-full w-full lg:w-[380px] z-40
               bg-white dark:bg-gray-950 border-l border-gray-200 dark:border-gray-800
               transition-transform duration-300 ease-in-out
-              ${isEditing ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'}
+              ${isEditing && sidebarView ? 'translate-x-0 pointer-events-auto' : isEditing && !sidebarView ? 'hidden lg:block translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'}
             `}
           >
             <div className="relative h-full overflow-hidden">

@@ -102,7 +102,7 @@ export default function PublicStorePage() {
     .toUpperCase() || '?'
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900 relative">
+    <div className="min-h-screen flex items-center justify-center p-0 md:p-4 bg-gray-50 dark:bg-gray-900 relative">
       {/* Blurred background image - Public view only */}
       {store.avatarUrl && (
         <>
@@ -141,8 +141,8 @@ export default function PublicStorePage() {
         {/* Store Card */}
         <div
           className={`
-            relative w-full overflow-hidden rounded-3xl border shadow-xl
-            ring-1 ring-black/30 dark:ring-white/30
+            relative w-full overflow-hidden rounded-none md:rounded-3xl border-0 md:border shadow-xl
+            ring-0 md:ring-1 ring-black/30 dark:ring-white/30
             ${store.theme === 'LIGHT' ? 'bg-white text-black border-black/30' : 'bg-black text-white border-gray-800/30'}
           `}
         >

@@ -12,7 +12,7 @@ interface SelfCollabModalProps {
 export default function SelfCollabModal({ open, onClose }: SelfCollabModalProps) {
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-sm p-8 gap-6">
+      <DialogContent className="max-w-sm p-8 gap-6 inset-x-auto inset-y-auto left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-lg border shadow-xl data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
         <div className="flex flex-col items-center text-center space-y-4">
           {/* Icon */}
           <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">

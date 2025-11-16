@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import PersonalInfoSection from "./PersonalInfoSection";
 import ConnectedAccountsSection from "./ConnectedAccountsSection";
 import DangerZoneSection from "./DangerZoneSection";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
 type Section = "personal-info" | "connected-accounts" | "pause-delete";
 
@@ -59,7 +60,6 @@ interface SettingsShellProps {
 export default function SettingsShell({ user }: SettingsShellProps) {
   const [activeSection, setActiveSection] = React.useState<Section>("personal-info");
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const filteredSections = React.useMemo(() => {
     if (!searchQuery.trim()) return sections;
@@ -85,13 +85,44 @@ export default function SettingsShell({ user }: SettingsShellProps) {
   };
 
   return (
-    <div className="h-full overflow-hidden bg-gray-50 dark:bg-gray-900">
-      {/* Mobile header */}
-      <div className="lg:hidden border-b bg-white dark:bg-gray-950 px-4 py-3">
-        <h1 className="text-xl font-bold">Settings</h1>
+    <div className="h-full overflow-hidden bg-gray-50 dark:bg-gray-900 flex flex-col">
+      {/* Header */}
+      <DashboardHeader
+        title="Settings"
+        subtitle="Manage your account settings"
+        showHandleBar={false}
+      />
+
+      {/* Mobile horizontal scrollable tabs */}
+      <div className="lg:hidden border-b bg-white dark:bg-gray-950 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-1 px-4 min-w-max">
+          {sections.map((section) => {
+            const Icon = section.icon;
+            const isActive = activeSection === section.id;
+
+            return (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap relative",
+                  isActive
+                    ? "text-[#1F2124] dark:text-white"
+                    : "text-muted-foreground"
+                )}
+              >
+                <Icon className="h-4 w-4 flex-shrink-0" />
+                <span>{section.label}</span>
+                {isActive && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1F2124] dark:bg-white" />
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="flex h-full">
+      <div className="flex h-full flex-1 overflow-hidden">
         {/* Left navigation - Desktop */}
         <aside className="hidden lg:flex w-80 flex-col border-r bg-white dark:bg-gray-950 h-full">
           <div className="p-6 border-b">
@@ -140,56 +171,9 @@ export default function SettingsShell({ user }: SettingsShellProps) {
           </nav>
         </aside>
 
-        {/* Mobile navigation sheet trigger */}
-        <div className="lg:hidden fixed bottom-4 left-4 z-50">
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg text-sm font-medium"
-          >
-            Sections
-          </button>
-        </div>
-
-        {/* Mobile navigation overlay */}
-        {mobileMenuOpen && (
-          <div
-            className="lg:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <div
-              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-950 rounded-t-xl p-4 space-y-2"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {sections.map((section) => {
-                const Icon = section.icon;
-                const isActive = activeSection === section.id;
-
-                return (
-                  <button
-                    key={section.id}
-                    onClick={() => {
-                      setActiveSection(section.id);
-                      setMobileMenuOpen(false);
-                    }}
-                    className={cn(
-                      "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left",
-                      isActive
-                        ? "bg-[#EAECF2] text-[#1F2124] dark:bg-[#EAECF2] dark:text-[#1F2124]"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    )}
-                  >
-                    <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-[#1F2124] dark:text-[#1F2124]")} />
-                    <span>{section.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
         {/* Right content panel */}
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-4xl p-6 lg:p-8">{renderSection()}</div>
+          <div className="mx-auto max-w-4xl p-4 lg:p-8">{renderSection()}</div>
         </main>
       </div>
     </div>
