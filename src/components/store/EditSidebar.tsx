@@ -163,8 +163,6 @@ export default function EditSidebar({ store, onUpdate, onPreviewUpdate, initialV
     <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'content' | 'design')} className="w-full h-full flex flex-col">
       {/* STICKY HEADER - TABS */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-950 px-6 pt-4 pb-4 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
-        <h2 className="text-lg font-semibold mb-4">Edit Store</h2>
-        
         <TabsList className="w-full">
           <TabsTrigger value="content" className="flex-1">
             Content
