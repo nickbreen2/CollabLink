@@ -325,13 +325,22 @@ export default function EditCustomLinkPage({ link, onBack, onSave, onDelete, the
               ) : thumbnailSize !== 'none' ? (
                 // Use icon as background when size is selected but no image uploaded
                 <div className="absolute inset-0 flex items-center justify-center">
+                  {/* Gradient background for more visual interest */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" />
+                  {/* Subtle pattern overlay */}
+                  <div className="absolute inset-0 opacity-10" style={{
+                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)'
+                  }} />
+                  {/* Icon - more prominent */}
                   <img
                     src={getIconUrlForBackground()}
                     alt="Icon background"
-                    className="w-3/4 h-3/4 object-contain opacity-30"
+                    className="w-2/3 h-2/3 object-contain opacity-60 relative z-10"
                   />
-                  {/* Dark overlay for better text readability */}
-                  <div className="absolute inset-0 bg-black/40" />
+                  {/* Lighter overlay for better contrast */}
+                  <div className="absolute inset-0 bg-black/20" />
+                  {/* Border to define the edges */}
+                  <div className="absolute inset-0 border-2 border-white/10 rounded-xl" />
                 </div>
               ) : null}
 

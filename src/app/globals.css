@@ -83,6 +83,13 @@
     scrollbar-width: none;  /* Firefox */
   }
   
+  /* Remove borders from Next.js Image components and their wrapper elements */
+  span[style*="position: relative"] img,
+  span[style*="position: relative"] {
+    border: none !important;
+    outline: none !important;
+  }
+  
   /* Safe area padding utilities */
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);
