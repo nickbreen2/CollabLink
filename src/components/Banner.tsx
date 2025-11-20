@@ -22,11 +22,14 @@ export default function Banner({ src, avatarUrl, initials, theme }: BannerProps)
           src={imageSrc}
           alt="Profile banner"
           fill
-          className="object-cover border-0"
+          className="object-cover !border-0 border-none"
           style={{
             objectPosition: 'center 30%', // Move image down - shows more of the top
             transform: 'scale(1.3)', // Make image 30% bigger
             transformOrigin: 'center center', // Scale from center
+            border: 'none',
+            outline: 'none',
+            boxShadow: 'none',
           }}
           unoptimized
         />
