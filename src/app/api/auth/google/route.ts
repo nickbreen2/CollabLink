@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { OAuth2Client } from 'google-auth-library'
 
 export async function GET(request: NextRequest) {
-  // Get the origin from the request to build the redirect URI dynamically
-  const origin = request.nextUrl.origin
+  // Use environment variable if set, otherwise fall back to request origin
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || request.nextUrl.origin
+  const origin = baseUrl.replace(/\/+$/, '')
   const redirectUri = `${origin}/api/auth/google/callback`
   
   // Log the redirect URI for debugging
