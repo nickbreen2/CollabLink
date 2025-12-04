@@ -28,8 +28,9 @@ function generateHandleFromEmail(email: string): string {
 }
 
 export async function GET(request: NextRequest) {
-  // Get the origin from the request to build absolute URLs (needed in catch block too)
-  const origin = request.nextUrl.origin
+  // Use environment variable if set, otherwise fall back to request origin
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || request.nextUrl.origin
+  const origin = baseUrl.replace(/\/+$/, '')
   
   try {
     console.log('🔵 Google OAuth callback started')
